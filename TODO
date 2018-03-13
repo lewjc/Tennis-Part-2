@@ -1,0 +1,57 @@
+TODO:
+
+    Import round scores from file
+    Allow user input round scores
+
+    If while reading from a file an erroneous score (a draw) has
+    been encountered, the system should process the rest of the match scores in the file and ask the
+    user to input the correct score manually.
+
+    A player can withdraw at any point in the match (due
+    to injury). In that case a win of 3 sets to 2 sets (men) or 2 sets to 1 (women) will be recorded to the
+    credit of the non-withdrawing player
+
+    If a male player wins by 3 sets to 0 then the base points awarded for that round must be multiplied
+    by a factor of 2.5
+
+    If a male player wins by 3 sets to 1 then the based points awarded for that round must be multiplied
+    by a factor of 1.5    
+
+    In the ladies tournaments, a win by 2 sets to 0 will yield a bonus factor of 2.5 by which the base
+    points awarded for that round must be multiplied
+
+    allow for wins or losses for an individual player
+    to be processed. For example the system might be required to produce the number of wins by a
+    score of 3 sets to 1 that have been achieved by a specific player at that point in time in the season.
+
+    Task 1 – Design a solution (produce relevant pseudo code) to allow the processing of scores for both
+    input types. At the end of each round the user interface will have to provide the user with the
+    winners of that round and the options to go to the next round or exit. On choosing the next round
+    the user will have to select whether they want to read results from files or to enter them manually.
+    Once all rounds have been completed the winner will be declared and the user will be offered the
+    choice to see the tournament’s ranking (points or prize money), the overall season ranking, proceed
+    to the next tournament, or exit the program. At any point of time all processed data must be saved
+    upon exit from the program.
+
+    Task 3 - Design (pseudo code) relevant algorithms that will allow you to show the user the following.
+
+     The number of wins for a player with a particular score – either in a specific
+    tournament, or overall for the season.
+     The percentage wins of a player in a specific tournament or for a whole season.
+     Show the player with most wins in the season so far.
+     Show the player with most loses in the season so far.
+
+    Task - 6 A second season will be introduced – player pairings will be governed by player seedings.
+    The final placements (based on ranking points earned) from the previous season will be used to
+    create the first round pairs for each tournament. The first sixteen in a season cannot play each other
+    in the first round of the tournament. Once in the second round of a tournament, player seedings will
+    be based on the relevant positions achieved in the same tournament during the previous season. So
+    those that have played in the last eight in the previous season of the same tournament cannot face
+    each other in the round of the last sixteen players in the new season, those that have reached the
+    semi-finals in the previous season cannot play each other in the last eight round and finally those
+    that have reached the final in the previous season cannot play each other in the semi-finals.
+    The points’ difficulty factor (for the tournament) will only be applied if a player has at least achieved
+    the same position as per the previous season in the same tournament.
+    At the end of each tournament ranking (points and prize money) will be made available to the user
+    as choices to see. These will include ranking for the tournament, the current season, or combining
+    those of the previous season with the current season. 
