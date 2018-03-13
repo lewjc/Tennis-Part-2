@@ -30,6 +30,23 @@ def start_menu():
         else:
             print("Invalid Choice")
 
+def choose_gender():
+    print("Choose Gender \n")
+    print("[1] Male tournament")
+    print("[2] Female tournament")
+
+    while True:
+        
+        user_choice = get_user_choice()
+
+        if user_choice == "1":
+            return '1'
+        elif user_choice == "2":
+            return '2'
+        else:
+            print('Invalid Choice')
+            continue
+
 def circuit_population_menu(tournament_circuit):
     menu_dict = {}
     all_tournaments = tournament_circuit.list_of_tournaments
@@ -65,6 +82,33 @@ def circuit_population_menu(tournament_circuit):
                 current_circuit_tournaments.append(tournament_to_add)
                 print("{0} {1} Added to circuit".format(tournament_to_add.tournament_code, tournament_to_add.gender))
                 del menu_dict[user_choice]
+        else:
+            print("Invalid Choice")
+
+def choose_tournament(tournament_circuit):
+    tournament_menu = dict()
+    print("Choose Tournament\n")
+
+    # loop through and get each tournament, and allocate it a menu space
+
+    for i, current_tournament in enumerate(tournament_circuit.list_of_tournaments, 1):
+        tournament_menu[str(i)] = current_tournament.tournament_code
+        print("[{0}] {1} {2}".format(str(i), tournament_menu[str(i)], current_tournament.gender))
+
+    tournament_menu[str(i + 1)] = "Return"
+    print("[{0}] Return".format(i + 1))
+
+    # add return option to menu
+
+    while True:
+        user_choice = input("--> ")
+        if user_choice in tournament_menu:
+            if tournament_menu[user_choice] == "Return":
+                return 0
+            else:
+                tournaments = tournament_circuit.list_of_tournaments
+                # Returns current tournament
+                return tournaments[int(user_choice) - 1]
         else:
             print("Invalid Choice")
 
@@ -144,3 +188,6 @@ def system_information():
 
 def quit_program():
     sys.exit("----BYE----")
+
+def get_user_choice():
+    return input('-> ')

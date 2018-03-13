@@ -109,7 +109,7 @@ class Tournament:
         self.prize_money_allocation = prize_money_allocation
         self.tournament_difficulty = self.assign_tournament_difficulty()
         self.players = tournament_players
-        self.tournament_complete = False
+        self.complete = False
         self.amount_of_rounds = self.set_amount_of_rounds()
         self.players_left_to_play = list()
        
