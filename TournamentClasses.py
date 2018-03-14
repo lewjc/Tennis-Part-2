@@ -16,6 +16,8 @@ class Player:
         self.tournament_money = 0
         self.wins_by_straight_sets = 0
         self.wins_where_opponent_scored_one = 0
+        self.wins_in_tournament = list()
+        self.losses_in_tournament = list()
         self.compare_overall_prize_money = False
         self.compare_overall_points = False
 
@@ -117,9 +119,10 @@ class Tournament:
 
 class Round:   
 
-    def __init__(self, number, list_of_matches):
+    def __init__(self, number, list_of_matches, list_of_players):
         self.number = number
         self.list_of_matches = list_of_matches
+        self.list_of_players = list_of_players
 
 class Match:
 

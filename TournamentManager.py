@@ -72,10 +72,11 @@ def input_results(tournament, ranking_points):
             
         # Loop through all of the matches in the round
         for match in current_round.list_of_matches:
-
-            # randmoise display input, makes it look better. 
+            # randmisse display input, makes it look better. 
             display_descision = random.randint(1,2)
             if input_from_file:
+                
+
                 if(display_descision == 1):
 
                     player_one = match.winner
@@ -90,18 +91,34 @@ def input_results(tournament, ranking_points):
                     player_two = match.winner
                     player_two_score = match.winner_score
             else:
-                # User input manually
+                # TODO: set input manually
                 pass
 
+            if(match.is_invalid):
+                print_match(player_one, player_one_score, player_two, player_two_score)
+                print('This result is invalid, which player won?')
+                print('[1] {0}\n[2] {1}'.format(player_one, player_two))
+                while True:
+                    user_input = Menu.get_user_choice()
+                    if user_input == '1':
+                        pass
+                    elif  user_input == '2':
+                        pass
+                
+            else:
+                print_match(player_one, player_one_score, player_two, player_two_score)
+                
+
             # Output info about the winner and loser
-            print('{0} Score: {1} {2} Score: {3}'.format(player_one, player_one_score, player_two,
-                                                         player_two_score)) 
+         
 
             print('Winner - {0}\n'.format(match.winner))
 
-            # Get the actual player object from the 
+            # Get the actual player object from the list of players
             temp = [player for player in tournament.players if player.name == match.winner]
             winning_player = temp[0]
+            temp = [player for player in tournament.players if player.name == match.loser]
+            loser = temp[0]
             
             winning_player.tournament_points += (float(ranking_points[str(round_number)]) * float(Match.multiply_points(match.score_difference, tournament.gender)))
 
@@ -146,10 +163,15 @@ def print_current_points_ranking(players):
     print()
 
 def print_input_menu():
-
     print('[Input Menu]\n')
     print("[1] Input next round from file")
     print("[2] Input next round manually")
     print("[3] Display current prize money rankings")
     print("[4] Display current ranking points rankings")
     print("[5] Return")
+
+def print_match(player_one, score_one, player_two, score_two):
+    print('{0} Score: {1} {2} Score: {3}'.format(player_one, score_one, player_two,
+                                                    score_two)) 
+
+

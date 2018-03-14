@@ -9,7 +9,7 @@ def start_menu():
             print("[1] Start new tournament circuit")
             print("[2] Load previous circuit data")
             print("[3] System Information")
-            print("[4] Quit")
+            print("[0] Quit")
         do_print = False
         user_choice = input("--> ")
         # load new circuit
@@ -25,7 +25,7 @@ def start_menu():
             print(system_information())
             do_print = True
             continue
-        elif user_choice == "4":
+        elif user_choice == "0":
             quit_program()
         else:
             print("Invalid Choice")

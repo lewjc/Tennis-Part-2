@@ -177,6 +177,7 @@ def import_round_results(tournament_code, gender):
         file_row_list = open_file(os.path.join(os.path.dirname(__file__), "Data/{0} {1}/{0} ROUND {2} {1}.csv".format(tournament_code, gender, i+1)))
         file_row_list.pop(0)
         list_of_matches = list()
+        list_of_players = list()
 
         # loop through all matches imported from the file
         for row in file_row_list:
@@ -185,6 +186,9 @@ def import_round_results(tournament_code, gender):
             score_one = row[1]
             player_two = row[2]
             score_two = row[3]
+
+            list_of_players.append(player_one)
+            list_of_players.append(player_two)
 
             match_results = Match.evaluate_match_score(int(score_one), int(score_two), gender)
 
@@ -202,8 +206,9 @@ def import_round_results(tournament_code, gender):
 
             list_of_matches.append(current_match)
 
+
         # Create new round object and append it to the list of rounds to be stored wihtin the tournament
-        list_of_rounds.append(Round(i+1, list_of_matches))
+        list_of_rounds.append(Round(i+1, list_of_matches, list_of_players))
 
     return list_of_rounds
 

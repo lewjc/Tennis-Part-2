@@ -5,7 +5,18 @@ import Leaderboard
 import os
 import sys
 
+import pickle
+
+
 tournament_circuit = None
+
+def save_file(tournament_circuits):
+    with open(os.path.join(os.path.dirname(__file__), 'DATA/main.json'), 'wb') as file:
+        pickle.dump(tournament_circuit, file, protocol=pickle.HIGHEST_PROTOCOL)
+
+def load_file():
+    with open(os.path.join(os.path.dirname(__file__), 'DATA/main.json'), 'rb') as file:
+         return pickle.load(file)
 
 def clear_terminal():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -24,7 +35,7 @@ while True:
                                   "Data/TOURNAMENTS IN CIRCUIT")
     # Import old results
     elif user_choice == "2":
-        pass
+        tournament_circuit = load_file()
 
     else:
        print('Invalid Choice')
@@ -64,6 +75,10 @@ while True:
                     player_to_add.ranking_points += float(player.tournament_points)
                     player_to_add.prize_money += int(player.tournament_money)
 
+            save_file(tournament_circuit)
+            tournament_circuit = load_file()
+
+
         # view current season ranking points
         elif user_choice == '2':
             gender = Menu.choose_gender()
@@ -74,5 +89,5 @@ while True:
             gender = Menu.choose_gender()
             Leaderboard.display_overall_money_leaderboard(gender, tournament_circuit)
         # return to the original menu
-        elif user_choice == '4':
+        elif user_choice == '0':
             break;
