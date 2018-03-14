@@ -9,7 +9,7 @@ class TournamentCircuit:
 
 class Player:
     def __init__(self, player_name):
-        self.player_name = player_name
+        self.name = player_name
         self.prize_money = 0
         self.ranking_points = 0
         self.tournament_points = 0
@@ -21,74 +21,44 @@ class Player:
 
     # below are methods of comparison for the player objects, each one is determined by a boolean value.
 
+    def __eq__(self, other):
+        return self.name == other.name
+
+
     def __gt__(self, other):
         if self.compare_overall_points:
-            if self.ranking_points > other.ranking_points:
-                return True
-            else:
-                return False
+            return self.ranking_points > other.ranking_points
         elif self.compare_overall_prize_money:
-            if self.prize_money > other.prize_money:
-                return True
-            else:
-                return False
-
+            return self.prize_money > other.prize_money
         else:
-            if self.tournament_points > other.tournament_points:
-                return True
-            else:
-                return False
+            return self.tournament_points > other.tournament_points
+          
 
     def __lt__(self, other):
         if self.compare_overall_points:
-            if self.ranking_points < other.ranking_points:
-                return True
-            else:
-                return False
+            return self.ranking_points < other.ranking_points
         elif self.compare_overall_prize_money:
-            if self.prize_money < other.prize_money:
-                return True
-            else:
-                return False
+            return self.prize_money < other.prize_money
         else:
-            if self.tournament_points < other.tournament_points:
-                return True
-            else:
-                return False
+            return self.tournament_points < other.tournament_points
+               
 
     def __ge__(self, other):
         if self.compare_overall_points:
-            if self.ranking_points >= other.ranking_points:
-                return True
-            else:
-                return False
+            return self.ranking_points >= other.ranking_points
         elif self.compare_overall_prize_money:
-            if self.prize_money >= other.prize_money:
-                return True
-            else:
-                return False
+            return self.prize_money >= other.prize_money
         else:
-            if self.tournament_points >= other.tournament_points:
-                return True
-            else:
-                return False
+            return self.tournament_points >= other.tournament_points
+            
 
     def __le__(self, other):
         if self.compare_overall_points:
-            if self.ranking_points <= other.ranking_points:
-                return True
-            else:
-                return False
+            return self.ranking_points <= other.ranking_points
         elif self.compare_overall_prize_money:
-            if self.prize_money <= other.prize_money:
-                return True
-            else:
-                return False
+            return self.prize_money <= other.prize_money
         else:
-            if self.tournament_points <= other.tournament_points:
-                return True
-            else:
-                return False
+            return self.tournament_points <= other.tournament_points
 
     # clear current tournament points
 
@@ -100,18 +70,19 @@ class Player:
 
 
 class Tournament:
+
     def __init__(self, tournament_code, prize_money_allocation,
                  tournament_players, gender, list_of_rounds):
 
         self.tournament_code = tournament_code
         self.list_of_rounds = list_of_rounds
         self.gender = gender
-        self.prize_money_allocation = prize_money_allocation
-        self.tournament_difficulty = self.assign_tournament_difficulty()
+        self.prize_money = prize_money_allocation
+        self.difficulty = self.assign_tournament_difficulty()
         self.players = tournament_players
         self.complete = False
+        self.current_input_round = 0
         self.amount_of_rounds = self.set_amount_of_rounds()
-        self.players_left_to_play = list()
        
     # determine tournament difficulty
     def assign_tournament_difficulty(self):
@@ -152,10 +123,12 @@ class Round:
 
 class Match:
 
-    def __init__(self, winner, loser, score_difference, is_invalid=False):
+    def __init__(self, winner, winner_score, loser, loser_score, score_difference, is_invalid=False):
 
         self.winner = winner
+        self.winner_score = winner_score
         self.loser = loser
+        self.loser_score = loser_score
         self.score_difference = score_difference
         self.is_invalid = is_invalid
 
@@ -184,3 +157,17 @@ class Match:
         return (winning_score, score_difference)
 
         
+    @staticmethod
+    def multiply_points(score_difference, gender):
+
+        if score_difference < 2:
+            return 1
+        elif gender == "LADIES" and score_difference == 2:
+            return 2.5
+        elif gender == "MEN" and score_difference == 3:
+            return 2.5
+        elif gender == "MEN" and score_difference == 2:
+            return 1.5
+        else:
+            print('Invalid Gender {0}'.format(gender))
+            return 1

@@ -23,7 +23,7 @@ def display_overall_points_leaderboard(gender, tournament_circuit):
 
     for i, player in enumerate(list_of_players):
         rank = str(i+1)
-        points = int(player.ranking_points)
+        points = float(player.ranking_points)
         # String formatting for leader board display
         if i < 9:
             rank = "0" + rank
@@ -32,7 +32,7 @@ def display_overall_points_leaderboard(gender, tournament_circuit):
         elif 10 < points < 100:
             points = "0" + str(points)
 
-        print("--Rank:[{0}]  Name: {1}  Points: {2}--".format(rank, player.player_name, points))
+        print("--Rank:[{0}]  Name: {1}  Points: {2}--".format(rank, player.name, points))
     input("\n--ENTER--\n")
 
     return tournament_circuit
@@ -73,7 +73,7 @@ def display_overall_money_leaderboard(gender, tournament_circuit):
         else:
             money = str(money) + " "
 
-        print("--Rank:[{0}]  Name: {1}  Money: {2}--".format(rank, player.player_name, money))
+        print("--Rank:[{0}]  Name: {1}  Money: {2}--".format(rank, player.name, money))
     input("\n--ENTER--\n")
 
     return tournament_circuit

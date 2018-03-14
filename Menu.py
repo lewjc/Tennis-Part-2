@@ -69,6 +69,7 @@ def circuit_population_menu(tournament_circuit):
             if user_choice == default:
                 current_circuit_tournaments = [tournament for tournament in all_tournaments]
                 tournament_circuit._list_of_tournaments = current_circuit_tournaments
+                print('\n[All tournaments added to this circuit]')
                 return tournament_circuit
             elif user_choice == finish:
                 if len(current_circuit_tournaments) != 0:
@@ -97,7 +98,7 @@ def choose_tournament(tournament_circuit):
 
     tournament_menu[str(i + 1)] = "Return"
     print("[{0}] Return".format(i + 1))
-
+ 
     # add return option to menu
 
     while True:
@@ -108,11 +109,18 @@ def choose_tournament(tournament_circuit):
             else:
                 tournaments = tournament_circuit.list_of_tournaments
                 # Returns current tournament
-                return tournaments[int(user_choice) - 1]
+                tournament_choice = tournaments[int(user_choice) - 1]
+
+                if(tournament_choice.complete):
+                    print('Tournament results already entered')
+                    continue
+
+                return tournament_choice 
         else:
             print("Invalid Choice")
 
 def main_menu():
+    print('[MAIN MENU]\n')
     print("[1] Input scores")
     print("[2] View current circuit points ranking")
     print("[3] View current circuit money ranking")

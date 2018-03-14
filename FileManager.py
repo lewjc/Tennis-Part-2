@@ -62,6 +62,8 @@ def import_players(file_row_list):
 # handles points to be input
 def import_points(file_row_list):
     points = dict()
+    # Use this to make the key in the dictionary to be the round the points should be allocated on
+    round_count = 0
     # get points from file
     for i in range(len(file_row_list) - 1, 0, -1):
         row = file_row_list[i]
@@ -69,8 +71,9 @@ def import_points(file_row_list):
         if row[0] in points.values():
             continue
         else:
-            points[row[1]] = row[0]
-
+            points[str(round_count)] = row[0]
+            round_count += 1 
+    
     return points
 
 
@@ -126,6 +129,9 @@ def import_tournaments(file_row_list, male_players, female_players):
                 code = current.pop(0)
                 # sort list values into dict of position ranked and money earned
                 prize_money = dict()
+
+                count = 4
+
                 for j in range(len(current)):
                     if len(current) > 0:
                         position = current.pop(0)
@@ -133,7 +139,11 @@ def import_tournaments(file_row_list, male_players, female_players):
                         money = money.replace(',', '')
                         # strip unwanted characters
                         # put tournament prize money into dictionary
-                        prize_money[position] = money
+                        if money not in prize_money.values():
+                            # Key will be set as round that the money should be assigned with
+                            
+                            prize_money[str(count)] = money
+                            count -= 1
                     else:
                         continue
                 # create new male tournament object
@@ -183,12 +193,12 @@ def import_round_results(tournament_code, gender):
 
             # Determine the winner and create the match 
             if winning_score == 1:
-                current_match = Match(player_one, player_two, score_difference)
+                current_match = Match(player_one, score_one, player_two, score_two, score_difference)
             elif winning_score == 2:
-                current_match = Match(player_two, player_one, score_difference)
+                current_match = Match(player_two, score_two, player_one, score_one, score_difference)
             # if the score is 3, this means that we have an incorrect match. durinng processing this will be corrected
             elif winning_score == 3:
-                current_match = Match(player_one, player_two,score_difference, True)
+                current_match = Match(player_one, 0, player_two, 0, score_difference, True)
 
             list_of_matches.append(current_match)
 
