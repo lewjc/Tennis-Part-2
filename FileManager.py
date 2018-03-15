@@ -61,20 +61,41 @@ def import_players(file_row_list):
 
 # handles points to be input
 def import_points(file_row_list):
-    points = dict()
+    points_in_file = [Player.initialize_tournament_points]
     # Use this to make the key in the dictionary to be the round the points should be allocated on
     round_count = 0
     # get points from file
     for i in range(len(file_row_list) - 1, 0, -1):
         row = file_row_list[i]
         # only import unique values
-        if row[0] in points.values():
+        if row[0] in points_in_file:
             continue
         else:
-            points[str(round_count)] = row[0]
+            points_in_file.append(row[0])
             round_count += 1 
+
+    points_to_add_each_round = dict()
+
+    # Manipulate the points so that we get the difference in points each round
+
+    for current_round, item in enumerate(points_in_file):
     
-    return points
+        # if we are at the end of the points list 
+    
+        if current_round == (len(points_in_file) - 1):
+            points_to_add = points_in_file[current_round]
+
+        # Find the difference of the points between each round
+        # We need to do this because we are going to be potentially multiplying 
+        # Points each round
+
+        else:
+            point = int(item)
+            next_point = int(points_in_file[current_round + 1])
+            points_to_add = next_point - point
+            points_to_add_each_round[str(current_round)] = points_to_add
+
+    return points_to_add_each_round
 
 
 # handles importing tournaments and prize money

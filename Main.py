@@ -10,9 +10,9 @@ import pickle
 tournament_circuit = None
 
 # Save the circuit as pickle fiel
-def save_current_season(circuit):
+def save_current_season(tournament_circuit):
     with open(os.path.join(os.path.dirname(__file__), 'DATA/main.pickle'), 'wb') as file:
-        pickle.dump(circuit, file, protocol=pickle.HIGHEST_PROTOCOL)
+        pickle.dump(tournament_circuit, file, protocol=pickle.HIGHEST_PROTOCOL)
 
 def load_season():
     with open(os.path.join(os.path.dirname(__file__), 'DATA/main.pickle'), 'rb') as file:

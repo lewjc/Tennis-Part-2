@@ -1,5 +1,6 @@
 import QuickSort
 
+import locale
 
 def display_overall_points_leaderboard(gender, tournament_circuit):
     if gender == "1":
