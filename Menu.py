@@ -14,8 +14,19 @@ def start_menu():
         user_choice = input("--> ")
         # load new circuit
         if user_choice == "1":
-            print("Starting New Circuit \n")
-            return user_choice
+            print('Starting a new tournament will erase all of the data associated with the previous circuit.')
+            print('Continue? [Y/N]')
+            while True:
+                choice = get_user_choice()
+                if choice.lower() == 'y':                 
+                    print("Starting New Circuit \n")
+                    return user_choice
+                elif choice.lower() == 'n':
+                    print('Please press [2] to continue the input for the previous circuit')
+                    break
+                else:
+                    print('Invalid choice')
+
         # import previous data
         elif user_choice == "2":
             print("Loading Previous Data\n")
@@ -93,11 +104,17 @@ def choose_tournament(tournament_circuit):
     # loop through and get each tournament, and allocate it a menu space
 
     for i, current_tournament in enumerate(tournament_circuit.list_of_tournaments, 1):
-        tournament_menu[str(i)] = current_tournament.tournament_code
-        print("[{0}] {1} {2}".format(str(i), tournament_menu[str(i)], current_tournament.gender))
+        code_menu_string = '{0} {1}'.format(current_tournament.tournament_code, current_tournament.gender)
 
-    tournament_menu[str(i + 1)] = "Return"
-    print("[{0}] Return".format(i + 1))
+        if current_tournament.complete:
+            code_menu_string = strike(code_menu_string)
+
+        tournament_menu[str(i)] = current_tournament.tournament_code
+
+        print("[{0}] {1}".format(str(i), code_menu_string))
+
+    tournament_menu['0'] = "Return"
+    print("[{0}] Return".format('0'))
  
     # add return option to menu
 
@@ -194,8 +211,22 @@ def system_information():
    
    """
 
+# Exit
 def quit_program():
     sys.exit("----BYE----")
 
+# Return a choice given by the user
 def get_user_choice():
     return input('-> ')
+
+# Creates a strike through the text
+def strike(text):
+    i = 0
+    new_text = ''
+    while i < len(text):
+        if text[i] == ' ':
+            new_text = new_text + '-'
+        else:
+            new_text = new_text + (text[i] + u'\u0336')
+        i = i + 1
+    return(new_text)

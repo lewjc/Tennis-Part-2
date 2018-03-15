@@ -1,26 +1,26 @@
 TODO:
 
-    Import round scores from file
+    DONE: Import round scores from file
     Allow user input round scores
 
-    If while reading from a file an erroneous score (a draw) has
+    DONE: If while reading from a file an erroneous score (a draw) has
     been encountered, the system should process the rest of the match scores in the file and ask the
     user to input the correct score manually.
 
-    A player can withdraw at any point in the match (due
+    DONE: A player can withdraw at any point in the match (due
     to injury). In that case a win of 3 sets to 2 sets (men) or 2 sets to 1 (women) will be recorded to the
     credit of the non-withdrawing player
 
-    If a male player wins by 3 sets to 0 then the base points awarded for that round must be multiplied
+    DONE: If a male player wins by 3 sets to 0 then the base points awarded for that round must be multiplied
     by a factor of 2.5
 
-    If a male player wins by 3 sets to 1 then the based points awarded for that round must be multiplied
+    DONE: If a male player wins by 3 sets to 1 then the based points awarded for that round must be multiplied
     by a factor of 1.5    
 
-    In the ladies tournaments, a win by 2 sets to 0 will yield a bonus factor of 2.5 by which the base
+    DONE: In the ladies tournaments, a win by 2 sets to 0 will yield a bonus factor of 2.5 by which the base
     points awarded for that round must be multiplied
 
-    allow for wins or losses for an individual player
+    DONE: allow for wins or losses for an individual player
     to be processed. For example the system might be required to produce the number of wins by a
     score of 3 sets to 1 that have been achieved by a specific player at that point in time in the season.
 
@@ -41,7 +41,9 @@ TODO:
      Show the player with most wins in the season so far.
      Show the player with most loses in the season so far.
 
-    Task - 6 A second season will be introduced – player pairings will be governed by player seedings.
+    Task - 6 
+    
+    A second season will be introduced – player pairings will be governed by player seedings.
     The final placements (based on ranking points earned) from the previous season will be used to
     create the first round pairs for each tournament. The first sixteen in a season cannot play each other
     in the first round of the tournament. Once in the second round of a tournament, player seedings will

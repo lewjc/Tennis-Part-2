@@ -3,6 +3,9 @@ import random
 import Menu
 import QuickSort
 
+import locale
+import re
+
 from TournamentClasses import *
 
 def input_results(tournament, ranking_points):
@@ -37,30 +40,61 @@ def input_results(tournament, ranking_points):
     
         # get user choice for input method
 
-        print_input_menu()
+        print_input_menu(round_number, tournament.import_from_file_disabled)
 
         # wait for user input
         while True:            
             user_choice = Menu.get_user_choice()
-            if user_choice == '1':
+            if user_choice == '1' and not tournament.import_from_file_disabled:
                 input_from_file = True
                 break
-            elif user_choice == '2':
+            elif user_choice == '1' and tournament.import_from_file_disabled:
+                print('You have previously chosen to input results from file. This option is disabled because the system '  
+                      'cannot guarantee\n you have input results which will be the same as the results the system has on file.\n')
+                continue
+          
+            elif user_choice == '2' and not tournament.import_from_file_disabled:
+                print('By selecting to input from file, you are voiding the rest of the scores for ' +
+                    'this tournament.\nYou are unable to import results from file from here on out, continue? [Y/N]')
+                  # Once the user has chosen to input the results themselves, they can no longer import from file because
+            # the data may be different to that on file.
+                while True:
+                    void_file_inputs = Menu.get_user_choice()
+                    
+                    if void_file_inputs.lower() == 'y':
+                        input_from_file = False
+                        tournament.import_from_file_disabled = True
+                        continue_menu = False
+                        break
+                    elif void_file_inputs.lower() == 'n':
+                        continue_menu = True
+                        break
+                    else:
+                        print('Invalid choice')
+                        continue
+                
+                if continue_menu:
+                    continue
+                else:
+                    break
+            # If user wants to input from file 
+            elif user_choice == '2' and tournament.import_from_file_disabled:
                 input_from_file = False
                 break
+            # If user wants to view the tournament prize money
             elif user_choice == '3':
                 print_current_prize_money_ranking(tournament.players)
-                print_input_menu()
+                print_input_menu(round_number, tournament.import_from_file_disabled)
                 continue
             elif user_choice == '4':
                 print_current_points_ranking(tournament.players)
-                print_input_menu()
+                print_input_menu(round_number, tournament.import_from_file_disabled)
                 continue
             elif user_choice == '5':
                 return (round_number,list())
             else:
                 print('Invalid Input')
-
+        
         round_text = '      ROUND : {0}     '.format(round_number + 1)
 
         if((round_number) == tournament.amount_of_rounds - 1):
@@ -71,12 +105,12 @@ def input_results(tournament, ranking_points):
         print('======================\n')
             
         # Loop through all of the matches in the round
-        for match in current_round.list_of_matches:
+        for i,match in enumerate(current_round.list_of_matches):
             # randmisse display input, makes it look better. 
             display_descision = random.randint(1,2)
-            if input_from_file:
-                
 
+            if input_from_file:
+                # Randomise player display
                 if(display_descision == 1):
 
                     player_one = match.winner
@@ -85,34 +119,104 @@ def input_results(tournament, ranking_points):
                     player_two_score = match.loser_score
 
                 else:
-
                     player_one = match.loser
                     player_one_score = match.loser_score
                     player_two = match.winner
                     player_two_score = match.winner_score
             else:
-                # TODO: set input manually
-                pass
+                # Manual Input
 
+                # Display players available in round
+                print('Players available in this round:\n')
+                player_menu = {i : player  for i, player in enumerate(current_round.list_of_players)}
+                count = 0
+            
+                for i, (k,v) in enumerate(player_menu.items()):   
+                    print('[{0}] {1} '.format(f"{k:02}",v),end='')
+                    if (i + 1) % 4 == 0:
+                        print()
+                print()
+
+                # Let user choose 2 players
+                print('Pick 2 players, using their position in the list. write in format x,y ')
+
+                # get user's choice of players 
+                while True:
+                    choice = Menu.get_user_choice()
+                    if re.search('^\d,\d$', choice):
+                        match_players = choice.split(',')
+                        player_one_index = int(match_players[0])
+                        player_two_index = int(match_players[1])
+                        player_one = current_round.list_of_players[player_one_index]
+                        player_two = current_round.list_of_players[player_two_index]
+                        break
+                    else:
+                        print('Invalid')
+                
+                # Get the user ot input the scores for the match.
+                match_results = user_input_match_score(player_one, player_two, tournament.gender)
+
+                match.winner = match_results[0]
+                match.winner_score = match_results[1]
+                match.loser = match_results[2]
+                match.loser_score = match_results[3]
+
+
+            # If match is incorrect
             if(match.is_invalid):
                 print_match(player_one, player_one_score, player_two, player_two_score)
-                print('This result is invalid, which player won?')
-                print('[1] {0}\n[2] {1}'.format(player_one, player_two))
-                while True:
-                    user_input = Menu.get_user_choice()
-                    if user_input == '1':
-                        pass
-                    elif  user_input == '2':
-                        pass
+                print('This result is invalid, was either player injured?')
+                print('[1] {0}\n[2] {1}\n[0] No'.format(player_one, player_two))
                 
+                while True:
+                    # Check if a player is injured, if not get the user to correct the score.
+                    user_input = Menu.get_user_choice()
+                    # Player is injured
+                    if(user_input =='1' or user_input == '2'):
+                    
+                        match_results = player_is_injured(user_input, gender, player_one, player_two)
+                        if match_results == 0:
+                            # Should never occur, here just in case.
+                            print('Invalid user input given - {}'.format(user_input))
+                        else:
+                            match.winner = match_results[0]
+                            match.winner_score = match_results[1]
+                            match.loser = match_results[2]
+                            match.loser_score = match_results[3]
+                            break
+
+                    # If there were no injuries, get the user to correct the score
+                    elif user_input == '0':                           
+                        # This get score input and processes the scores and 
+                        # determines whether or not it is a valid score line.
+
+                        match_results = user_input_match_score(player_one, player_two, tournament.gender)
+
+                        if match_results == 0:
+                            # match results are incorrect
+                            print('Invalid score given')
+                        else:
+                            match.winner = match_results[0]
+                            match.winner_score = match_results[1]
+                            match.loser = match_results[2]
+                            match.loser_score = match_results[3]
+   
+                        # This ends the loop for sorting out invalid matches.
+                        break
+                    else:
+                        print('Invalid choice')
+
+                print()
+                print_match(match.winner, match.winner_score, match.loser, match.loser_score)
             else:
                 print_match(player_one, player_one_score, player_two, player_two_score)
                 
-
             # Output info about the winner and loser
          
-
             print('Winner - {0}\n'.format(match.winner))
+
+            current_round.list_of_players.remove(match.winner)
+            current_round.list_of_players.remove(match.loser)
 
             # Get the actual player object from the list of players
             temp = [player for player in tournament.players if player.name == match.winner]
@@ -120,20 +224,20 @@ def input_results(tournament, ranking_points):
             temp = [player for player in tournament.players if player.name == match.loser]
             loser = temp[0]
             
+            # allocate points for the tournament
             winning_player.tournament_points += (float(ranking_points[str(round_number)]) * float(Match.multiply_points(match.score_difference, tournament.gender)))
 
-            # If we are on the thid round of result input, then we need to start allocating prize money
+            # If we are on the second round of result input, then we need to start allocating prize money to winners.
             if round_number > 0:
                 winning_player.tournament_money = prize_money[str(round_number)]
 
         # Increment current round
         tournament.current_input_round = round_number + 1
 
-    
-    pass 
-    # After the results are fully Input
+    # After the results are fully Input, we need to multiply the points earned by the tournament difficulty
     for player in players:
-        player.tournament_points = float(player.tournament_points) * tournament_difficulty
+        player.tournament_points = float(float(player.tournament_points) * tournament_difficulty)
+        
 
     print_current_points_ranking(players)
     print_current_prize_money_ranking(players)
@@ -143,10 +247,16 @@ def input_results(tournament, ranking_points):
     return (None, players)
 
 def print_current_prize_money_ranking(players):
-    QuickSort.sort(players)
+
     print('\n============================')
     print("Current Prize Money Rankings")
     print('============================\n')
+
+    for player in players:
+        player.compare_tournament_money = True
+    QuickSort.sort(players)
+    for player in players:
+        player.compare_tournament_money = False
 
     for player in players:
         print(" Name: {0} Prize Money: {1}".format(player.name, player.tournament_money))
@@ -162,9 +272,12 @@ def print_current_points_ranking(players):
         print(" Name: {0} Points: {1:g}".format(player.name, player.tournament_points))
     print()
 
-def print_input_menu():
-    print('[Input Menu]\n')
-    print("[1] Input next round from file")
+def print_input_menu(round_number, input_from_file_disabled):
+    print('[Input Menu - Next Round -> {0}]\n'.format(round_number+1))
+    if(input_from_file_disabled):
+        print(Menu.strike("[1] Input next round from file"))
+    else:
+        print("[1] Input next round from file")        
     print("[2] Input next round manually")
     print("[3] Display current prize money rankings")
     print("[4] Display current ranking points rankings")
@@ -175,3 +288,46 @@ def print_match(player_one, score_one, player_two, score_two):
                                                     score_two)) 
 
 
+def user_input_match_score(player_one, player_two, gender):
+    print('Input score for {0} and {1} seperated by a (,) '.format(player_one, player_two))
+    while True:
+        new_scores = Menu.get_user_choice()
+        if re.search('^\d,\d$', new_scores):
+            scores = new_scores.split(',')
+            score_one = int(scores[0])
+            score_two = int(scores[1])
+
+            # check if match score is valid and get the score difference
+            score_evaluation_results = Match.evaluate_match_score(score_one, score_two, gender)
+            # If the evaluation returns 3, this means that the score was incorrect
+
+            if score_evaluation_results[0] == 3:
+                print('Invalid score input')
+                continue
+            # Else, these two conditions set winner and loser based on the 
+            elif score_evaluation_results[0] == 2:
+                return (player_two, score_two, player_one, score_one)
+
+            elif score_evaluation_results[0] == 1:
+                return(player_one, score_one, player_two, score_two)
+        else:
+            print('Incorrect format')
+            continue
+        
+  
+def player_is_injured(player_choice, gender, player_one, player_two):
+    if player_choice == '1':
+        # Winner is player one
+        if gender == 'MEN':
+            return (player_one, 3, player_two,2)
+        else:
+            return (player_one, 2, player_two, 1)
+    elif player_choice == '2':
+        # Winner is player two
+        if gender == 'MEN':
+            return(player_two, 3, player_one, 2)
+        else:
+            return(player_two, 2, player_one, 1)
+    else:
+        print('Invalid choice')
+        return 0

@@ -39,6 +39,8 @@ def display_overall_points_leaderboard(gender, tournament_circuit):
 
 
 def display_overall_money_leaderboard(gender, tournament_circuit):
+    locale.setlocale( locale.LC_ALL, '' )
+
     if gender == "1":
         players = tournament_circuit.male_circuit_players
 
@@ -72,8 +74,8 @@ def display_overall_money_leaderboard(gender, tournament_circuit):
             money = str(money) + "  "
         else:
             money = str(money) + " "
-
-        print("Rank:[{0}]  Name: {1}  Money: {2}".format(rank, player.name, money))
+    
+        print("Rank:[{0}]  Name: {1}  Money: {2}".format(rank, player.name, locale.currency(money, grouping=True)))
     input("\n--ENTER--\n")
 
     return tournament_circuit

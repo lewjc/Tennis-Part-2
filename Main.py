@@ -7,15 +7,15 @@ import sys
 
 import pickle
 
-
 tournament_circuit = None
 
-def save_file(tournament_circuits):
-    with open(os.path.join(os.path.dirname(__file__), 'DATA/main.json'), 'wb') as file:
-        pickle.dump(tournament_circuit, file, protocol=pickle.HIGHEST_PROTOCOL)
+# Save the circuit as pickle fiel
+def save_current_season(circuit):
+    with open(os.path.join(os.path.dirname(__file__), 'DATA/main.pickle'), 'wb') as file:
+        pickle.dump(circuit, file, protocol=pickle.HIGHEST_PROTOCOL)
 
-def load_file():
-    with open(os.path.join(os.path.dirname(__file__), 'DATA/main.json'), 'rb') as file:
+def load_season():
+    with open(os.path.join(os.path.dirname(__file__), 'DATA/main.pickle'), 'rb') as file:
          return pickle.load(file)
 
 def clear_terminal():
@@ -31,11 +31,10 @@ while True:
         tournament_codes = [tournament.tournament_code for tournament in
         tournament_circuit.list_of_tournaments]
                             
-        FileManager.write_to_file(tournament_codes, os.path.dirname(os.path.abspath(__file__)),
-                                  "Data/TOURNAMENTS IN CIRCUIT")
+        save_current_season(tournament_circuit)
     # Import old results
     elif user_choice == "2":
-        tournament_circuit = load_file()
+        tournament_circuit = load_season()
 
     else:
        print('Invalid Choice')
@@ -52,7 +51,6 @@ while True:
             # If user wants to return to the main menu
             if tournament_to_input_results == 0:
                 continue
-            
 
             tournament_results = TournamentManager.input_results(tournament_to_input_results, tournament_circuit.ranking_points)# now we need to input results for the tournament
 
@@ -74,10 +72,12 @@ while True:
                     player_to_add = temp[0]
                     player_to_add.ranking_points += float(player.tournament_points)
                     player_to_add.prize_money += int(player.tournament_money)
+                    # reset tournament points and money
+                    player_to_add.tournament_money = 0
+                    player_to_add.tournament_points = 0
 
-            save_file(tournament_circuit)
-            tournament_circuit = load_file()
-
+            # Save the information about the season
+            save_current_season(tournament_circuit)
 
         # view current season ranking points
         elif user_choice == '2':

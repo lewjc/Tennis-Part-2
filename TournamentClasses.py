@@ -19,6 +19,7 @@ class Player:
         self.wins_in_tournament = list()
         self.losses_in_tournament = list()
         self.compare_overall_prize_money = False
+        self.compare_tournament_money = False
         self.compare_overall_points = False
 
     # below are methods of comparison for the player objects, each one is determined by a boolean value.
@@ -32,6 +33,8 @@ class Player:
             return self.ranking_points > other.ranking_points
         elif self.compare_overall_prize_money:
             return self.prize_money > other.prize_money
+        elif self.compare_tournament_money:
+            return int(self.tournament_money) > int(other.tournament_money)
         else:
             return self.tournament_points > other.tournament_points
           
@@ -41,6 +44,8 @@ class Player:
             return self.ranking_points < other.ranking_points
         elif self.compare_overall_prize_money:
             return self.prize_money < other.prize_money
+        elif self.compare_tournament_money:
+            return int(self.tournament_money) < int(other.tournament_money)
         else:
             return self.tournament_points < other.tournament_points
                
@@ -50,15 +55,18 @@ class Player:
             return self.ranking_points >= other.ranking_points
         elif self.compare_overall_prize_money:
             return self.prize_money >= other.prize_money
+        elif self.compare_tournament_money:
+            return int(self.tournament_money) >= int(other.tournament_money)
         else:
             return self.tournament_points >= other.tournament_points
-            
 
     def __le__(self, other):
         if self.compare_overall_points:
             return self.ranking_points <= other.ranking_points
         elif self.compare_overall_prize_money:
             return self.prize_money <= other.prize_money
+        elif self.compare_tournament_money:
+            return int(self.tournament_money) <= int(other.tournament_money)
         else:
             return self.tournament_points <= other.tournament_points
 
@@ -84,6 +92,7 @@ class Tournament:
         self.players = tournament_players
         self.complete = False
         self.current_input_round = 0
+        self.import_from_file_disabled = False
         self.amount_of_rounds = self.set_amount_of_rounds()
        
     # determine tournament difficulty
@@ -141,15 +150,17 @@ class Match:
         winning_score = 3
         score_difference = 0
         
-        # if the match is a mens score and neither player has reached 3 sets
-        if gender == "MEN" and (score_one !=3 and score_two !=3):
+
+        # if the match is a mens score and neither player has reached 3 sets, or either of the mens scores are not between 0 - 3
+        if gender == "MEN" and ((score_one !=3 and score_two !=3) or not(0 <= score_one <=3) or not(0 <= score_two <=3)):
             # neither player scored 3, so there is an error
             return (winning_score, score_difference)
-        elif gender == "LADIES" and (score_one !=2 and score_two !=2):
+        
+        elif gender == "LADIES" and ((score_one !=2 and score_two !=2) or not(0 <= score_one <=2) or not(0 <= score_two <=2)):
             # neither player scored 2, so there is an error
             return (winning_score, score_difference)
         
-        if score_one >  score_two:
+        elif score_one >  score_two:
             score_difference = score_one - score_two
             winning_score = 1
             
