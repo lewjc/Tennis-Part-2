@@ -9,9 +9,9 @@ def display_overall_points_leaderboard(gender, tournament_circuit):
         players = tournament_circuit.female_circuit_players
 
     print("\n\n")
-    print("     ============================")
-    print("   --|OVERALL POINTS LEADERBOARD|--")
-    print("     ============================")
+    print("  ============================")
+    print("--|OVERALL POINTS LEADERBOARD|--")
+    print("  ============================")
 
     # use correct comparison method when performing quick-sort
     for player in players:
@@ -76,7 +76,8 @@ def display_overall_money_leaderboard(gender, tournament_circuit):
         else:
             money = str(money) + " "
     
-        print("Rank:[{0}]  Name: {1}  Money: {2}".format(rank, player.name, locale.currency(money, grouping=True)))
+        print("Rank:[{0}]  Name: {1}  Money: {2}".format(rank, player.name, locale.currency(int(money), grouping=True)))
     input("\n--ENTER--\n")
 
     return tournament_circuit
+

@@ -1,4 +1,8 @@
 class TournamentCircuit:
+
+    men = 'MEN'
+    ladies = 'LADIES'
+
     def __init__(self, list_of_tournaments, ranking_points,
                  male_circuit_players, female_circuit_players):
 
@@ -17,10 +21,8 @@ class Player:
         self.ranking_points = 0
         self.tournament_points = 0
         self.tournament_money = 0
-        self.wins_by_straight_sets = 0
-        self.wins_where_opponent_scored_one = 0
-        self.wins_in_tournament = list()
-        self.losses_in_tournament = list()
+        self.wins_in_circuit = dict()
+        self.losses_in_circuit = dict()
         self.compare_overall_prize_money = False
         self.compare_tournament_money = False
         self.compare_overall_points = False
@@ -80,7 +82,13 @@ class Player:
 
     def reset_tournament_money(self):
         self.tournament_money = 0
+    
+    def initialise_statistics(self, list_of_tournaments):
 
+       self.wins_in_circuit =  {tournament.tournament_code : list() for tournament in list_of_tournaments}
+       self.losses_in_circuit = {tournament.tournament_code : list() for tournament in list_of_tournaments}
+
+       input(self.wins_in_circuit)
 
 class Tournament:
 

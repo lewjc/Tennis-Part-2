@@ -1,5 +1,8 @@
+from __future__ import print_function # so works on Python 2 and 3 alike
+
 import Menu
 import FileManager
+
 import TournamentManager
 import Leaderboard
 import os
@@ -7,7 +10,9 @@ import sys
 
 import pickle
 
+from TermColours import colours
 tournament_circuit = None
+
 
 # Save the circuit as pickle fiel
 def save_current_season(tournament_circuit):
@@ -18,19 +23,25 @@ def load_season():
     with open(os.path.join(os.path.dirname(__file__), 'DATA/main.pickle'), 'rb') as file:
          return pickle.load(file)
 
+
 def clear_terminal():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 while True:
+
     user_choice = Menu.start_menu()
     
     # Start new tournament
     if user_choice == "1":
         tournament_circuit = Menu.circuit_population_menu(FileManager.get_main_data())
 
+        for male_player, female_player in zip(tournament_circuit.male_circuit_players, tournament_circuit.female_circuit_players):
+            male_player.initialise_statistics(tournament_circuit.list_of_tournaments)
+            female_player.initialise_statistics(tournament_circuit.list_of_tournaments)
+
         tournament_codes = [tournament.tournament_code for tournament in
         tournament_circuit.list_of_tournaments]
-                            
+        
         save_current_season(tournament_circuit)
     # Import old results
     elif user_choice == "2":
@@ -70,6 +81,9 @@ while True:
                 for player in players_in_tournament:
                     temp = [overall_player for overall_player in overall_players if player.name == overall_player.name]
                     player_to_add = temp[0]
+                    player_to_add.wins_in_circuit[tournament_to_input_results.tournament_code] = player.wins_in_circuit[tournament_to_input_results.tournament_code]
+                    player_to_add.losses_in_circuit[tournament_to_input_results.tournament_code] = player.losses_in_circuit[tournament_to_input_results.tournament_code]
+
                     player_to_add.ranking_points += float(player.tournament_points)
                     player_to_add.prize_money += int(player.tournament_money)
                     # reset tournament points and money

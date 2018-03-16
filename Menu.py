@@ -1,4 +1,8 @@
+
 import sys
+from TournamentClasses import TournamentCircuit
+
+from TermColours import colours
 
 # first menu options
 def start_menu():
@@ -6,7 +10,7 @@ def start_menu():
     do_print = True
     while True:
         if do_print:
-            print("[1] Start new tournament circuit")
+            print(colours.WHITE + "[1] Start new tournament circuit")
             print("[2] Load previous circuit data")
             print("[3] System Information")
             print("[0] Quit")
@@ -47,7 +51,6 @@ def choose_gender():
     print("[2] Female tournament")
 
     while True:
-        
         user_choice = get_user_choice()
 
         if user_choice == "1":
@@ -61,6 +64,7 @@ def choose_gender():
 def circuit_population_menu(tournament_circuit):
     menu_dict = {}
     all_tournaments = tournament_circuit.list_of_tournaments
+
     print("Choose tournaments to be in this circuit\n")
     for i, tournament in enumerate(all_tournaments, 1):
         menu_dict[str(i)] = tournament.tournament_code
@@ -98,21 +102,32 @@ def circuit_population_menu(tournament_circuit):
             print("Invalid Choice")
 
 def choose_tournament(tournament_circuit):
+
+    gender_choice = choose_gender()
+
+    if gender_choice == '1':
+         gender = TournamentCircuit.men
+    else:
+        gender = TournamentCircuit.ladies
+    
     tournament_menu = dict()
     print("Choose Tournament\n")
 
     # loop through and get each tournament, and allocate it a menu space
+    menu_choice = 0
 
-    for i, current_tournament in enumerate(tournament_circuit.list_of_tournaments, 1):
-        code_menu_string = '{0} {1}'.format(current_tournament.tournament_code, current_tournament.gender)
-
-        if current_tournament.complete:
-            code_menu_string = strike(code_menu_string)
-
-        tournament_menu[str(i)] = current_tournament.tournament_code
-
-        print("[{0}] {1}".format(str(i), code_menu_string))
-
+    for current_tournament in tournament_circuit.list_of_tournaments:
+        
+        if current_tournament.gender == gender:
+            code_menu_string = '{0} {1}'.format(current_tournament.tournament_code, current_tournament.gender)
+            if current_tournament.complete:
+                code_menu_string = strike(code_menu_string)
+            menu_choice = menu_choice + 1
+            tournament_menu[str(menu_choice)] = current_tournament.tournament_code
+            print("[{0}] {1}".format(str(menu_choice), code_menu_string))
+        else:
+            continue
+    
     tournament_menu['0'] = "Return"
     print("[{0}] Return".format('0'))
  
@@ -121,12 +136,16 @@ def choose_tournament(tournament_circuit):
     while True:
         user_choice = input("--> ")
         if user_choice in tournament_menu:
+
+            menu_code = tournament_menu[user_choice]
+
             if tournament_menu[user_choice] == "Return":
                 return 0
             else:
                 tournaments = tournament_circuit.list_of_tournaments
                 # Returns current tournament
-                tournament_choice = tournaments[int(user_choice) - 1]
+                choice = [tournament for tournament in tournament_circuit.list_of_tournaments if tournament.tournament_code == menu_code]
+                tournament_choice = choice[0]
 
                 if(tournament_choice.complete):
                     print('Tournament results already entered')
@@ -141,29 +160,32 @@ def main_menu():
     print("[1] Input scores")
     print("[2] View current circuit points ranking")
     print("[3] View current circuit money ranking")
-    print("[4] Return")
-    print("[5] Quit")
+    print("[4] View Player Statistics")
+    print("[5] Return")
+    print("[0] Quit")
     while True:
         user_choice = input("--> ")
         if user_choice == "1":
-            print("---Input data--\n")
+            print("[INPUT DATA]\n")
             return user_choice
         elif user_choice == "2":
-            print("---Loading Circuit Points Ranking---\n")
+            print("[LOADING CIRCUIT POINTS RANKING]\n")
             return user_choice
         elif user_choice == "3":
-            print("---Loading Circuit Money Ranking---\n")
+            print("[LOADING CIRCUIT MONEY RANKING]\n")
             return user_choice
         elif user_choice == "4":
+            print('[LOADING STATISTICS]')
+        elif user_choice == "5":
             print("--Returning to start--")
             return user_choice
-        elif user_choice == "5":
+        elif user_choice == "0":
             quit_program()
         else:
             print("Invalid Choice")
 
 def print_title():
-    print("""
+    print(colours.ORANGE + """
   _____              _      ___           _   _            
  |_   _|__ _ _  _ _ (_)___ | _ \__ _ _ _ | |_(_)_ _  __ _  
    | |/ -_) ' \| ' \| (_-< |   / _` | ' \| / / | ' \/ _` | 
@@ -174,7 +196,7 @@ def print_title():
   \__ \ || (_-<  _/ -_) '  \                                
   |___/\_, /__/\__\___|_|_|_|                               
        |__/\n
-    """)
+    """ + colours.ENDC)
 
 
 def system_information():
@@ -227,6 +249,6 @@ def strike(text):
         if text[i] == ' ':
             new_text = new_text + '-'
         else:
-            new_text = new_text + (text[i] + u'\u0336')
+            new_text = colours.RED + new_text + (text[i] + u'\u0336') 
         i = i + 1
-    return(new_text)
+    return(new_text + colours.ENDC)

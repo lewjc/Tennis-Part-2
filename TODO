@@ -24,7 +24,7 @@ TODO:
     to be processed. For example the system might be required to produce the number of wins by a
     score of 3 sets to 1 that have been achieved by a specific player at that point in time in the season.
 
-    Task 1 – Design a solution (produce relevant pseudo code) to allow the processing of scores for both
+    DONE: Task 1 – Design a solution (produce relevant pseudo code) to allow the processing of scores for both
     input types. At the end of each round the user interface will have to provide the user with the
     winners of that round and the options to go to the next round or exit. On choosing the next round
     the user will have to select whether they want to read results from files or to enter them manually.

@@ -2,10 +2,9 @@ import locale
 import random
 import Menu
 import QuickSort
-
-import Main
 import sys
-import locale
+
+from TermColours import colours
 import re
 
 from TournamentClasses import *
@@ -24,12 +23,12 @@ def input_results(tournament, ranking_points):
     prize_money_string = locale.currency(int(prize_money["4"]), grouping=True)
 
     # output tournament info
-    print("==========================================================================")
+    print(colours.BEIGE + "==========================================================================")
     print("\n[{0} - {1}] Players: {2} | Top Prize: {3} | Difficulty: {4} \n".format(tournament.tournament_code, tournament.gender,
                                                                            len(players),
                                                                            prize_money_string,
                                                                            tournament_difficulty))
-    print("==========================================================================\n")
+    print("==========================================================================\n" + colours.ENDC + colours.WHITE)
     input("--Press ENTER to start--\n")
 
  
@@ -45,7 +44,8 @@ def input_results(tournament, ranking_points):
         print_input_menu(round_number, tournament.import_from_file_disabled)
 
         # wait for user input
-        while True:            
+        while True: 
+
             user_choice = Menu.get_user_choice()
             if user_choice == '1' and not tournament.import_from_file_disabled:
                 input_from_file = True
@@ -62,7 +62,6 @@ def input_results(tournament, ranking_points):
             # the data may be different to that on file.
                 while True:
                     void_file_inputs = Menu.get_user_choice()
-                    
                     if void_file_inputs.lower() == 'y':
                         input_from_file = False
                         tournament.import_from_file_disabled = True
@@ -76,6 +75,7 @@ def input_results(tournament, ranking_points):
                         continue
                 
                 if continue_menu:
+                    print('Please make menu choice')
                     continue
                 else:
                     break
@@ -102,9 +102,9 @@ def input_results(tournament, ranking_points):
         if((round_number) == tournament.amount_of_rounds - 1):
             round_text = '        FINAL           '
 
-        print('======================')
+        print(colours.BEIGE + '======================')
         print(round_text)
-        print('======================\n')
+        print('======================\n ' + colours.ENDC + colours.WHITE)
             
         # Loop through all of the matches in the round
         for i,match in enumerate(current_round.list_of_matches):
@@ -135,12 +135,10 @@ def input_results(tournament, ranking_points):
             
                 for i, (k,v) in enumerate(player_menu.items()):   
                     print('[{0}] {1} '.format(f"{k:02}",v),end='')
-                    if (i + 1) % 4 == 0:
+                    if (i + 1) % 4 == 0 or i == len(player_menu.items()) - 1:
                         print()
-                print()
-
                 # Let user choose 2 players
-                print('Pick 2 players, using their position in the list. write in format x,y ')
+                print('\nPick 2 players, using their position in the list. write in format x,y ')
 
                 # get user's choice of players 
                 while True:
@@ -149,8 +147,14 @@ def input_results(tournament, ranking_points):
                         match_players = choice.split(',')
                         player_one_index = int(match_players[0])
                         player_two_index = int(match_players[1])
-                        player_one = current_round.list_of_players[player_one_index]
-                        player_two = current_round.list_of_players[player_two_index]
+
+                        if player_one_index in player_menu.keys() and player_two_index in player_menu.keys():
+                            player_one = current_round.list_of_players[player_one_index]
+                            player_two = current_round.list_of_players[player_two_index]
+                            
+                        else:
+                            print('Invalid player choice')
+                            continue
                         break
                     else:
                         print('Invalid')
@@ -162,7 +166,8 @@ def input_results(tournament, ranking_points):
                 match.winner_score = match_results[1]
                 match.loser = match_results[2]
                 match.loser_score = match_results[3]
-
+                # Print new line before result is displayed.
+                print()
 
             # If match is incorrect
             if(match.is_invalid):
@@ -194,15 +199,7 @@ def input_results(tournament, ranking_points):
                         user_choice = Menu.get_user_choice()
                        
                         if user_choice.lower() == 'y':
-                            new_match_results = correct_invalid_score(round_number, tournament.list_of_rounds, player_one, player_two, tournament.gender)
-                       
-                            match.winner = new_match_results[0]
-                            match.winner_score = new_match_results[1]
-                            match.loser = new_match_results[2]
-                            match.loser_score = new_match_results[3]
 
-                            score_corrected = True
-                        else:
                             tournament.import_from_file_disabled = True
                             print('The result is invalid, was Either player injured?')
                             print('[1] {0}\n[2] {1}\n[0] No'.format(player_one, player_two))
@@ -256,16 +253,26 @@ def input_results(tournament, ranking_points):
                                                 loser_index = round_list_of_players.index(match.loser)
                                                 round_list_of_players[loser_index] = match.winner
 
+                                        score_corrected = True
+
                                     # This ends the loop for sorting out invalid matches.
                                     break
                                 else:
                                     print('Invalid choice')
                             # Prints new line, meny looks cleaner 
                             print()
+                        else:
+                            new_match_results = correct_invalid_score(round_number, tournament.list_of_rounds, player_one, player_two, tournament.gender)
+                       
+                            match.winner = new_match_results[0]
+                            match.winner_score = new_match_results[1]
+                            match.loser = new_match_results[2]
+                            match.loser_score = new_match_results[3]
+
+                            score_corrected = True
+
                     else:
                         print('Invalid Choice')
-                    
-                
                 
                 print_match(match.winner, match.winner_score, match.loser, match.loser_score)
             else:
@@ -273,7 +280,7 @@ def input_results(tournament, ranking_points):
                 
             # Output info about the winner and loser
          
-            print('Winner - {0}\n'.format(match.winner))
+            print(colours.GREEN + colours.BLINK + 'Winner - {0}\n'.format(match.winner) + colours.ENDC + colours.WHITE)
 
             current_round.list_of_players.remove(match.winner)
             current_round.list_of_players.remove(match.loser)
@@ -282,16 +289,17 @@ def input_results(tournament, ranking_points):
             temp = [player for player in tournament.players if player.name == match.winner]
             winning_player = temp[0]
             temp = [player for player in tournament.players if player.name == match.loser]
-            loser = temp[0]
+            losing_player = temp[0]
 
             # allocate points for the tournament
             winning_player.tournament_points += (float(ranking_points[str(round_number)]) * float(Match.multiply_points(match.score_difference, tournament.gender)))
 
+            winning_player.wins_in_circuit[tournament.tournament_code].append(match)
+            losing_player.losses_in_circuit[tournament.tournament_code].append(match)
+
             # If we are on the second round of result input, then we need to start allocating prize money to winners.
             if round_number > 0:
                 winning_player.tournament_money = prize_money[str(round_number)]
-
-        Main.save_current_season()
           
         # Increment current round
         tournament.current_input_round = round_number + 1
@@ -299,9 +307,13 @@ def input_results(tournament, ranking_points):
     # After the results are fully Input, we need to multiply the points earned by the tournament difficulty
     for player in players:
         player.tournament_points = float(float(player.tournament_points) * tournament_difficulty)
-  
-    print_current_points_ranking(players)
-    print_current_prize_money_ranking(players)
+    
+    input('[ANY KEY TO VIEW FINAL RANKINGS]\n')
+
+    # print_current_points_ranking(players)
+    # print_current_prize_money_ranking(players)
+
+    print_final_leaderboard(players)
 
     tournament.complete = True
 
@@ -309,11 +321,19 @@ def input_results(tournament, ranking_points):
 
     return (None, players)
 
-def print_current_prize_money_ranking(players):
 
-    print('\n============================')
-    print("Current Prize Money Rankings")
-    print('============================\n')
+def print_current_prize_money_ranking(players, return_value=False):
+
+    leaderboard_in_list = list()
+
+    header = '''============================
+Current Prize Money Rankings
+============================'''
+
+    if not return_value:
+        print(header)
+    
+    leaderboard_in_list.append(header)
 
     for player in players:
         player.compare_tournament_money = True
@@ -322,17 +342,37 @@ def print_current_prize_money_ranking(players):
         player.compare_tournament_money = False
 
     for player in players:
-        print(" Name: {0} Prize Money: {1}".format(player.name, player.tournament_money))
-    print()
+        ranking_string = " Name: {0} Prize Money: {1}".format(player.name, player.tournament_money)
+        leaderboard_in_list.append(ranking_string)
+        if not return_value:
+            print(" Name: {0} Prize Money: {1}".format(player.name, player.tournament_money))
 
-def print_current_points_ranking(players):
+    if return_value:
+        return leaderboard_in_list
+
+
+
+def print_current_points_ranking(players, return_value=False):
+
+    leaderboard_in_list = list()
     QuickSort.sort(players)
-    print('\n============================')
-    print("Current Tournament Rankings")
-    print('============================\n')
+
+    header = '''============================
+Current Tournament Rankings 
+============================'''
+
+    leaderboard_in_list.append(header)
+
+    if not return_value:
+        print(header)
 
     for player in players:
-        print(" Name: {0} Points: {1:g}".format(player.name, player.tournament_points))
+        line =  "Name: {0} Points: {1:g}".format(player.name, player.tournament_points)
+        leaderboard_in_list.append(line)
+        if not return_value:
+            print(line)
+    if(return_value):
+        return leaderboard_in_list
     print()
 
 def print_input_menu(round_number, input_from_file_disabled):
@@ -410,4 +450,31 @@ def correct_invalid_score(current_round_number, list_of_rounds, player_one, play
         print('Neither player exists in the next round, {MATCH ERROR}')
         sys.exit()
 
+def print_final_leaderboard(players):
+    points = print_current_points_ranking(players, True)
+    money  = print_current_prize_money_ranking(players, True)
     
+
+    header_1 = points.pop(0)
+    header_2 = money.pop(0)
+    
+    header_1_print = header_1.split('\n')
+    header_2_print = header_2.split('\n')
+    for line1,line2 in zip(header_1_print, header_2_print):
+        print(colours.BEIGE +  line1 + "     ", end='' )
+        print(line2 + colours.ENDC)
+    first_elm = points[0]
+
+    colours_count = 0
+
+    for i,line in enumerate(points):
+        
+        if colours_count == (len(colours.list_of_colours) - 1):
+            colours_count = 0
+        spaces = len(first_elm) - len(line)
+        print(colours.list_of_colours[colours_count] + str(line.strip('\n') + ' '* spaces), end='')
+        print('      ' + str(money[i]) + colours.ENDC)
+
+        colours_count += 1
+
+    print(colours.WHITE +  '')

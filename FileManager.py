@@ -4,7 +4,6 @@ from ADT import *
 from TournamentClasses import *
 import re
 
-
 def get_main_data():
     # defined data directory
     data_directory = os.path.dirname(__file__)
