@@ -160,7 +160,7 @@ def input_results(tournament, ranking_points):
                         print('Invalid')
                 
                 # Get the user ot input the scores for the match.
-                match_results = user_input_match_score(player_one, player_two, tournament.gender)
+                match_results = user_input_score(tournament.gender, player_one, player_two)
 
                 match.winner = match_results[0]
                 match.winner_score = match_results[1]
@@ -236,7 +236,7 @@ def input_results(tournament, ranking_points):
                                     # This get score input and processes the scores and 
                                     # determines whether or not it is a valid score line.
 
-                                    match_results = user_input_match_score(player_one, player_two, tournament.gender)
+                                    match_results = user_input_score(tournament.gender, player_one, player_two)
 
                                     if match_results == 0:
                                         # match results are incorrect
@@ -391,8 +391,12 @@ def print_match(player_one, score_one, player_two, score_two):
                                                     score_two)) 
 
 
-def user_input_match_score(player_one, player_two, gender):
-    print('Input score for {0} and {1} seperated by a (,) '.format(player_one, player_two))
+def user_input_score(gender, player_one=None, player_two=None,statistics=False):
+    if(statistics):
+        print('Input score you would like to check in format 1,3 for example ')
+    else:
+        print('Input score for {0} and {1} seperated by a (,) '.format(player_one, player_two))
+
     while True:
         new_scores = Menu.get_user_choice()
         if re.search('^\d,\d$', new_scores):
@@ -404,14 +408,16 @@ def user_input_match_score(player_one, player_two, gender):
             score_evaluation_results = Match.evaluate_match_score(score_one, score_two, gender)
             # If the evaluation returns 3, this means that the score was incorrect
 
-            if score_evaluation_results[0] == 3:
+            if score_evaluation_results[0] != 3 and statistics:
+                return scores
+            elif score_evaluation_results[0] == 3:
                 print('Invalid score input')
                 continue
             # Else, these two conditions set winner and loser based on the 
-            elif score_evaluation_results[0] == 2:
+            elif score_evaluation_results[0] == 2 and not statistics:
                 return (player_two, score_two, player_one, score_one)
 
-            elif score_evaluation_results[0] == 1:
+            elif score_evaluation_results[0] == 1 and not statistics:
                 return(player_one, score_one, player_two, score_two)
         else:
             print('Incorrect format')

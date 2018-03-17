@@ -88,8 +88,6 @@ class Player:
        self.wins_in_circuit =  {tournament.tournament_code : list() for tournament in list_of_tournaments}
        self.losses_in_circuit = {tournament.tournament_code : list() for tournament in list_of_tournaments}
 
-       input(self.wins_in_circuit)
-
 class Tournament:
 
     def __init__(self, tournament_code, prize_money_allocation,

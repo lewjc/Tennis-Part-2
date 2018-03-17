@@ -80,7 +80,6 @@ def import_points(file_row_list):
     for current_round, item in enumerate(points_in_file):
     
         # if we are at the end of the points list 
-    
         if current_round == (len(points_in_file) - 1):
             points_to_add = points_in_file[current_round]
 

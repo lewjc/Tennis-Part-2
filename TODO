@@ -35,7 +35,7 @@ TODO:
 
     Task 3 - Design (pseudo code) relevant algorithms that will allow you to show the user the following.
 
-     The number of wins for a player with a particular score – either in a specific
+    DONE  The number of wins for a player with a particular score – either in a specific
     tournament, or overall for the season.
      The percentage wins of a player in a specific tournament or for a whole season.
      Show the player with most wins in the season so far.

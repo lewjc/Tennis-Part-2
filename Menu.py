@@ -72,7 +72,7 @@ def circuit_population_menu(tournament_circuit):
         print("[{0}] {1} {2}".format(str(i), menu_dict[str(i)], tournament.gender))
 
     default = str(i+1)
-    finish = str(i+2)
+    finish = '0'
     menu_dict[default] = "ALL"
     menu_dict[finish] = "Finish"
     print("[{0}] All".format(default))
@@ -167,23 +167,55 @@ def main_menu():
         user_choice = input("--> ")
         if user_choice == "1":
             print("[INPUT DATA]\n")
-            return user_choice
         elif user_choice == "2":
             print("[LOADING CIRCUIT POINTS RANKING]\n")
-            return user_choice
         elif user_choice == "3":
             print("[LOADING CIRCUIT MONEY RANKING]\n")
-            return user_choice
         elif user_choice == "4":
             print('[LOADING STATISTICS]')
         elif user_choice == "5":
             print("--Returning to start--")
-            return user_choice
         elif user_choice == "0":
             quit_program()
         else:
             print("Invalid Choice")
+            continue
+        return user_choice
 
+
+def statistics_menu():
+    print('\n[STATISTICS MENU]\n')
+    print('[1] Number of wins for a player with a particular score')
+    print('[2] Percentage wins of a player')
+    print('[3] Show the player with most wins in the season so far')
+    print('[4] Show the player with most loses in the season so far.')
+    print('[0] Return')
+
+    while True:
+        user_choice = get_user_choice()
+        
+        if user_choice == '1':
+            print('Wins with particular score\n')
+        elif user_choice == '2':
+            print('Percentage wins of a player\n')
+        elif user_choice == '3':
+            print('Most wins\n')
+        elif user_choice == '4':
+            print('Most losses\n')
+        elif user_choice == '0':
+            return '0'
+        else:
+            print('Invalid Choice')
+            continue
+        break
+    gender = choose_gender()
+    
+    if gender == '1':
+        gender = TournamentCircuit.men
+    elif gender == '2':
+        gender = TournamentCircuit.ladies
+
+    return (user_choice, gender)
 def print_title():
     print(colours.ORANGE + """
   _____              _      ___           _   _            

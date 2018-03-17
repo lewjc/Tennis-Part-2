@@ -2,6 +2,7 @@ from __future__ import print_function # so works on Python 2 and 3 alike
 
 import Menu
 import FileManager
+import StatisticManager
 
 import TournamentManager
 import Leaderboard
@@ -33,6 +34,7 @@ while True:
     
     # Start new tournament
     if user_choice == "1":
+        clear_terminal()
         tournament_circuit = Menu.circuit_population_menu(FileManager.get_main_data())
 
         for male_player, female_player in zip(tournament_circuit.male_circuit_players, tournament_circuit.female_circuit_players):
@@ -45,11 +47,13 @@ while True:
         save_current_season(tournament_circuit)
     # Import old results
     elif user_choice == "2":
+        clear_terminal()
         tournament_circuit = load_season()
 
     else:
        print('Invalid Choice')
 
+    clear_terminal()
     # start main menu
     while True:
         print()
@@ -80,12 +84,16 @@ while True:
                 # add overall points and money to the right person
                 for player in players_in_tournament:
                     temp = [overall_player for overall_player in overall_players if player.name == overall_player.name]
+                    # get the player
                     player_to_add = temp[0]
+                    # add wins and losses  from this tournament to their record, used for statistics
                     player_to_add.wins_in_circuit[tournament_to_input_results.tournament_code] = player.wins_in_circuit[tournament_to_input_results.tournament_code]
                     player_to_add.losses_in_circuit[tournament_to_input_results.tournament_code] = player.losses_in_circuit[tournament_to_input_results.tournament_code]
 
+                    # add points and prize money to the overall player records.
                     player_to_add.ranking_points += float(player.tournament_points)
                     player_to_add.prize_money += int(player.tournament_money)
+
                     # reset tournament points and money
                     player_to_add.tournament_money = 0
                     player_to_add.tournament_points = 0
@@ -102,6 +110,28 @@ while True:
         elif user_choice == '3':
             gender = Menu.choose_gender()
             Leaderboard.display_overall_money_leaderboard(gender, tournament_circuit)
+
+        # Loading statistics
+        elif user_choice == '4':
+            show_statistic_menu = True
+            while show_statistic_menu == True:
+
+                statistic_choice = Menu.statistics_menu()
+
+                if statistic_choice == '0':
+                    show_statistic_menu = False
+                    continue
+                
+                choice = statistic_choice[0]
+                gender = statistic_choice[1]
+
+                if gender == tournament_circuit.men:
+                    players = tournament_circuit.male_circuit_players
+                else:
+                    players = tournament_circuit.female_circuit_players
+
+                StatisticManager.display_statistics(players, choice, gender, tournament_circuit.list_of_tournaments)
+            
         # return to the original menu
         elif user_choice == '0':
             break;
