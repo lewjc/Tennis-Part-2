@@ -3,13 +3,14 @@ import random
 import Menu
 import QuickSort
 import sys
+import FileManager
 
 from TermColours import colours
 import re
 
 from TournamentClasses import *
 
-def input_results(tournament, ranking_points):
+def input_results(tournament, tournament_circuit, season_number):
     # Used for money formatting at torunament display start
     locale.setlocale( locale.LC_ALL, '' )
 
@@ -18,6 +19,7 @@ def input_results(tournament, ranking_points):
     players = tournament.players
     tournament_difficulty = tournament.difficulty
     prize_money = tournament.prize_money
+    ranking_points = tournament_circuit.ranking_points
 
     # Manipulate money for better output
     prize_money_string = locale.currency(int(prize_money["4"]), grouping=True)
@@ -34,7 +36,6 @@ def input_results(tournament, ranking_points):
  
     # enumerate through the list of matches in the tournament
     for round_number, current_round in enumerate(tournament.list_of_rounds):
-
         # if user has not finished inputting results yet, loop until we are back to the current round
         if(round_number < tournament.current_input_round):
             continue
@@ -173,7 +174,7 @@ def input_results(tournament, ranking_points):
             if(match.is_invalid):
                 print_match(player_one, player_one_score, player_two, player_two_score)
                 # TODO: Only ask if not on round 5
-                print('This result is invalid, should the system correct itself? [Y/N]')
+                print('\nThis result is invalid, should the system correct itself? [Y/N]')
                 # Ask user if they would like to correct the score themselves or have the system do it.
                 score_corrected = False
                 while True:
@@ -297,9 +298,12 @@ def input_results(tournament, ranking_points):
             winning_player.wins_in_circuit[tournament.tournament_code].append(match)
             losing_player.losses_in_circuit[tournament.tournament_code].append(match)
 
+            FileManager.save_current_season(tournament_circuit, season_number)
             # If we are on the second round of result input, then we need to start allocating prize money to winners.
             if round_number > 0:
                 winning_player.tournament_money = prize_money[str(round_number)]
+            elif round_number == 0:
+                tournament.started = True
           
         # Increment current round
         tournament.current_input_round = round_number + 1
@@ -318,7 +322,7 @@ def input_results(tournament, ranking_points):
     tournament.complete = True
 
     input('[ANY KEY TO RETURN TO MAIN MENU]')
-
+    
     return (None, players)
 
 
@@ -347,6 +351,7 @@ Current Prize Money Rankings
         if not return_value:
             print(" Name: {0} Prize Money: {1}".format(player.name, player.tournament_money))
 
+    print
     if return_value:
         return leaderboard_in_list
 
@@ -367,7 +372,7 @@ Current Tournament Rankings
         print(header)
 
     for player in players:
-        line =  "Name: {0} Points: {1:g}".format(player.name, player.tournament_points)
+        line =  " Name: {0} Points: {1:g}".format(player.name, player.tournament_points)
         leaderboard_in_list.append(line)
         if not return_value:
             print(line)
@@ -447,10 +452,10 @@ def correct_invalid_score(current_round_number, list_of_rounds, player_one, play
     next_round = list_of_rounds[current_round_number+1]
     
     if(player_one in next_round.list_of_players):
-        print('{0} Exists in the next round, this assumes {1} was injured during round {2}\nBy default, {0} wins.\n'.format(player_one, player_two, current_round_number + 1))
+        print('\n{0} Exists in the next round, this assumes {1} was injured during round {2}\nBy default, {0} wins.\n'.format(player_one, player_two, current_round_number + 1))
         return player_is_injured('1', gender, player_one, player_two)
     elif(player_two in next_round.list_of_players):
-        print('{0} Exists in the next round, this assumes {1} was injured during round {2}\nBy default, {0} wins.\n'.format(player_two, player_one, current_round_number + 1))
+        print('\n{0} Exists in the next round, this assumes {1} was injured during round {2}\nBy default, {0} wins.\n'.format(player_two, player_one, current_round_number + 1))
         return player_is_injured('2', gender, player_one, player_two)
     else:
         print('Neither player exists in the next round, {MATCH ERROR}')

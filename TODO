@@ -37,9 +37,9 @@ TODO:
 
     DONE  The number of wins for a player with a particular score – either in a specific
     tournament, or overall for the season.
-     The percentage wins of a player in a specific tournament or for a whole season.
-     Show the player with most wins in the season so far.
-     Show the player with most loses in the season so far.
+    DONE  The percentage wins of a player in a specific tournament or for a whole season.
+    DONE  Show the player with most wins in the season so far.
+    DONE  Show the player with most loses in the season so far.
 
     Task - 6 
     

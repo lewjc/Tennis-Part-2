@@ -1,16 +1,21 @@
 
 import sys
 from TournamentClasses import TournamentCircuit
-
+import os
 from TermColours import colours
 
+
+
+def clear_terminal():
+    os.system('cls' if os.name == 'nt' else 'clear')
+    
 # first menu options
-def start_menu():
+def start_menu(tournament_circuit):
     print_title()
     do_print = True
     while True:
         if do_print:
-            print(colours.WHITE + "[1] Start new tournament circuit")
+            print(colours.WHITE + "[1] Start new season")
             print("[2] Load previous circuit data")
             print("[3] System Information")
             print("[0] Quit")
@@ -18,23 +23,30 @@ def start_menu():
         user_choice = input("--> ")
         # load new circuit
         if user_choice == "1":
-            print('Starting a new tournament will erase all of the data associated with the previous circuit.')
-            print('Continue? [Y/N]')
+
+            season_choice = choose_season(tournament_circuit.complete if tournament_circuit != None else False )        
+            
             while True:
+                print('Starting a new Season will erase all of the data associated with the previous season.')
+                print('Continue? [Y/N]')
                 choice = get_user_choice()
-                if choice.lower() == 'y':                 
-                    print("Starting New Circuit \n")
-                    return user_choice
+                if choice.lower() == 'y':
+                    print("Starting New Season {0} \n".format(season_choice))
+                    return (user_choice, season_choice)
                 elif choice.lower() == 'n':
-                    print('Please press [2] to continue the input for the previous circuit')
+                    print('\n[CANCELLING NEW SEASON]\n')
+                    do_print = True
                     break
                 else:
                     print('Invalid choice')
 
         # import previous data
         elif user_choice == "2":
-            print("Loading Previous Data\n")
-            return user_choice
+
+            season_choice = choose_season(tournament_circuit.complete if tournament_circuit != None else False )        
+        
+            print("Loading Previous Data for season {0}\n".format(season_choice))
+            return (user_choice, season_choice) 
         # quit
         elif user_choice == "3":
             print(system_information())
@@ -45,6 +57,32 @@ def start_menu():
         else:
             print("Invalid Choice")
 
+def choose_season(unlock_second=False):
+
+    season_two_text = '[2] Season 2'
+    if not unlock_second:
+        season_two_text = strike(season_two_text) + colours.WHITE
+    
+    print('[SEASON CHOICE]\n')
+    print('[1] Season 1')
+    print(season_two_text)
+    while True:
+        user_choice = get_user_choice()
+
+        # load first season
+        if user_choice == '1':
+            return '1'
+        # Second season is not currently available
+        elif user_choice == '2' and not unlock_second:
+            print('Season 2 is not currently available,\nPlease finish entering Season 1 results.')
+            continue
+        # Second season is now available
+        elif user_choice == '2' and unlock_second:
+            return '2'
+        else:
+            print('Invalid Choice')
+            continue
+        # load second season
 def choose_gender():
     print("Choose Gender \n")
     print("[1] Male tournament")
@@ -54,7 +92,9 @@ def choose_gender():
         user_choice = get_user_choice()
 
         if user_choice == "1":
+            clear_terminal()
             return '1'
+            clear_terminal()
         elif user_choice == "2":
             return '2'
         else:
@@ -124,7 +164,7 @@ def choose_tournament(tournament_circuit):
                 code_menu_string = strike(code_menu_string)
             menu_choice = menu_choice + 1
             tournament_menu[str(menu_choice)] = current_tournament.tournament_code
-            print("[{0}] {1}".format(str(menu_choice), code_menu_string))
+            print(colours.WHITE + "[{0}] {1}".format(str(menu_choice), code_menu_string))
         else:
             continue
     
@@ -155,8 +195,9 @@ def choose_tournament(tournament_circuit):
         else:
             print("Invalid Choice")
 
-def main_menu():
-    print('[MAIN MENU]\n')
+def main_menu(season_number):
+    clear_terminal()
+    print('[MAIN MENU - SEASON {0}]\n'.format(season_number))
     print("[1] Input scores")
     print("[2] View current circuit points ranking")
     print("[3] View current circuit money ranking")
@@ -166,13 +207,13 @@ def main_menu():
     while True:
         user_choice = input("--> ")
         if user_choice == "1":
-            print("[INPUT DATA]\n")
+            print("\n[INPUT DATA]\n")
         elif user_choice == "2":
-            print("[LOADING CIRCUIT POINTS RANKING]\n")
+            print("\n[LOADING CIRCUIT POINTS RANKING]\n")
         elif user_choice == "3":
-            print("[LOADING CIRCUIT MONEY RANKING]\n")
+            print("\n[LOADING CIRCUIT MONEY RANKING]\n")
         elif user_choice == "4":
-            print('[LOADING STATISTICS]')
+            print('\n[LOADING STATISTICS]')
         elif user_choice == "5":
             print("--Returning to start--")
         elif user_choice == "0":
@@ -217,7 +258,7 @@ def statistics_menu():
 
     return (user_choice, gender)
 def print_title():
-    print(colours.ORANGE + """
+    print(colours.BEIGE + """
   _____              _      ___           _   _            
  |_   _|__ _ _  _ _ (_)___ | _ \__ _ _ _ | |_(_)_ _  __ _  
    | |/ -_) ' \| ' \| (_-< |   / _` | ' \| / / | ' \/ _` | 
@@ -234,34 +275,40 @@ def print_title():
 def system_information():
     return """
  -Design and Analysis of Data Structures and Algorithms-
+ ---------------------------------------------------------------------------------
  
    =============================
-   | DADSA COURSEWORK - PART A |
+   | DADSA COURSEWORK - PART B |
    | AUTHOR - LEWIS CUMMINS    |
    | STUDENT NUMBER - 16014766 |              
    =============================
      
-   Each tournament currently has its own round 1 scores. From there you may 
-   either input the results for the next round of the tournament from file 
-   or alternatively input them yourself each round. Ranking points and 
-   prize money are stored through out each round in the tournaments and are 
-   viewable after each round's scores have been input. The system will 
-   check and catch double entries of results, in case you make a mistake. 
-   The system also saves data to  data files allowing you to exit and 
-   come back to finish entering results. After all results have been input,
-   you will be taken to a final menu which allows you to view the overall 
-   rankings for both prize money and points
+   First Season:
+
+   Each tournament has 5 rounds on file, with the opiton to enter the results yourself. 
+   Should you choose this option, then you uwill not be able to input results from file 
+   for the rest of the match, this protects the integrity of the scores and is the best 
+   way to minimize conflicting score entry. There are statistics available for each player.
+
+   [Namely]:
+
+    The number of wins for a player with a particular score – either in a specific
+     tournament, or overall for the season.
+
+    The percentage wins of a player in a specific tournament or for a whole season.
+
+    Show the player with most wins in the season so far.
+
+    Show the player with most loses in the season so far.
+
+   Second Season:
    
-   ----------------------------------------------------------------------------
+
+   
+   ---------------------------------------------------------------------------------
    
    To add a new tournament, type the name of it into the prize money file, and
    write corresponding prize money
-   
-   Functionality to be added:
-   
-   - user add their own tournaments with corresponding prize money allocation
-   - use less amount of files for storing data
-   - use json over csv (UNSURE)
    
    """
 

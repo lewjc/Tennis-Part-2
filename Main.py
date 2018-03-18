@@ -1,6 +1,9 @@
 from __future__ import print_function # so works on Python 2 and 3 alike
 
 import Menu
+
+import atexit
+
 import FileManager
 import StatisticManager
 
@@ -9,56 +12,77 @@ import Leaderboard
 import os
 import sys
 
-import pickle
+from TournamentClasses import Season
 
 from TermColours import colours
+
 tournament_circuit = None
 
+# Initialise our 2 seasons
+list_of_seasons = [Season(1, tournament_circuit), Season(2, None)]
 
-# Save the circuit as pickle fiel
-def save_current_season(tournament_circuit):
-    with open(os.path.join(os.path.dirname(__file__), 'DATA/main.pickle'), 'wb') as file:
-        pickle.dump(tournament_circuit, file, protocol=pickle.HIGHEST_PROTOCOL)
+def on_exit():
 
-def load_season():
-    with open(os.path.join(os.path.dirname(__file__), 'DATA/main.pickle'), 'rb') as file:
-         return pickle.load(file)
+    print('\n[Saving Season {0} Session Data]\n'.format(current_season.number))
+    FileManager.save_current_season(tournament_circuit, current_season.number)
 
+atexit.register(on_exit)
 
 def clear_terminal():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 while True:
 
-    user_choice = Menu.start_menu()
+    choice = Menu.start_menu(tournament_circuit)
     
+    user_choice = choice[0]
+    season_to_start = choice[1]
+
+    ting = int(season_to_start) - 1
+    current_season = list_of_seasons[ting]
+
     # Start new tournament
     if user_choice == "1":
         clear_terminal()
-        tournament_circuit = Menu.circuit_population_menu(FileManager.get_main_data())
-
+        # Determine which season to start
+        # if season 2, we need to set up the tournament circuit differently,
+        # due to the constraints on players.
+        if current_season.number == 2:
+            current_season.tournament_circuit = Menu.circuit_population_menu(FileManager.get_main_data(True))
+            tournament_circuit = season.tournament_circuit
+        # If season 1, do normal stuff
+        else:
+            current_season.tournament_circuit = Menu.circuit_population_menu(FileManager.get_main_data())
+            tournament_circuit = current_season.tournament_circuit
+        
+        # Initialise the player statistic library
         for male_player, female_player in zip(tournament_circuit.male_circuit_players, tournament_circuit.female_circuit_players):
             male_player.initialise_statistics(tournament_circuit.list_of_tournaments)
             female_player.initialise_statistics(tournament_circuit.list_of_tournaments)
-
+        # Get all of the tournament codes.
         tournament_codes = [tournament.tournament_code for tournament in
         tournament_circuit.list_of_tournaments]
         
-        save_current_season(tournament_circuit)
-    # Import old results
+        FileManager.save_current_season(tournament_circuit, current_season.number)
+
+    # Import previous results
     elif user_choice == "2":
         clear_terminal()
-        tournament_circuit = load_season()
+        start = int(season_to_start) - 1
+        list_of_seasons[start].tournament_circuit = FileManager.load_season(current_season.number)
+
+        tournament_circuit = list_of_seasons[int(season_to_start) - 1].tournament_circuit
 
     else:
        print('Invalid Choice')
 
     clear_terminal()
+
     # start main menu
     while True:
         print()
-        user_choice = Menu.main_menu()
-
+        user_choice = Menu.main_menu(current_season.number)
+        clear_terminal()
         # start tournament imports
         if user_choice == '1':
             tournament_to_input_results = Menu.choose_tournament(tournament_circuit)
@@ -66,8 +90,9 @@ while True:
             # If user wants to return to the main menu
             if tournament_to_input_results == 0:
                 continue
-
-            tournament_results = TournamentManager.input_results(tournament_to_input_results, tournament_circuit.ranking_points)# now we need to input results for the tournament
+            
+            # now we need to input results for the tournament
+            tournament_results = TournamentManager.input_results(tournament_to_input_results, tournament_circuit, current_season.number)
 
             current_input_round = tournament_results[0]
 
@@ -84,6 +109,7 @@ while True:
                 # add overall points and money to the right person
                 for player in players_in_tournament:
                     temp = [overall_player for overall_player in overall_players if player.name == overall_player.name]
+                    
                     # get the player
                     player_to_add = temp[0]
                     # add wins and losses  from this tournament to their record, used for statistics
@@ -93,13 +119,13 @@ while True:
                     # add points and prize money to the overall player records.
                     player_to_add.ranking_points += float(player.tournament_points)
                     player_to_add.prize_money += int(player.tournament_money)
-
+                
                     # reset tournament points and money
                     player_to_add.tournament_money = 0
                     player_to_add.tournament_points = 0
 
             # Save the information about the season
-            save_current_season(tournament_circuit)
+            FileManager.save_current_season(tournament_circuit, current_season.number)
 
         # view current season ranking points
         elif user_choice == '2':
@@ -131,7 +157,7 @@ while True:
                     players = tournament_circuit.female_circuit_players
 
                 StatisticManager.display_statistics(players, choice, gender, tournament_circuit.list_of_tournaments)
-            
+
         # return to the original menu
-        elif user_choice == '0':
+        elif user_choice == '5':
             break;

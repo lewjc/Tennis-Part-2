@@ -1,5 +1,6 @@
 import QuickSort
 
+from TermColours import colours
 import locale
 
 def display_overall_points_leaderboard(gender, tournament_circuit):
@@ -9,9 +10,9 @@ def display_overall_points_leaderboard(gender, tournament_circuit):
         players = tournament_circuit.female_circuit_players
 
     print("\n\n")
-    print("  ============================")
-    print("--|OVERALL POINTS LEADERBOARD|--")
-    print("  ============================")
+    print(colours.BEIGE + "=====================================")
+    print("|OVERALL RANKKING POINTS LEADERBOARD|")
+    print("=====================================" + colours.WHITE)
 
     # use correct comparison method when performing quick-sort
     for player in players:
@@ -49,9 +50,9 @@ def display_overall_money_leaderboard(gender, tournament_circuit):
         players = tournament_circuit.female_circuit_players
 
     print("\n\n")
-    print("     ============================")
-    print("   --|OVERALL MONEY LEADERBOARD|--")
-    print("     ============================")
+    print(colours.BEIGE + "====================================")
+    print("|  OVERALL PRIZE MONEY LEADERBOARD  |")
+    print("====================================" + colours.WHITE)
 
     # use correct comparison method when performing quicksort
     for player in players:

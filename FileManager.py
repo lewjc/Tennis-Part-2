@@ -1,10 +1,17 @@
 import csv
 import os
+
 from ADT import *
+
 from TournamentClasses import *
+
+import pickle
+
 import re
 
-def get_main_data():
+
+
+def get_main_data(season_2=False):
     # defined data directory
     data_directory = os.path.dirname(__file__)
 
@@ -22,9 +29,15 @@ def get_main_data():
 
     file_name = "Data/PRIZE MONEY.csv"
     full_path = os.path.join(data_directory, file_name)
-    list_of_tournaments = import_tournaments(open_file(full_path),
-                                             male_players, female_players)
 
+    # Load season 1 information
+    if not season_2:
+        list_of_tournaments = import_tournaments(open_file(full_path),
+                                                 male_players, female_players)
+    # Load season 2 information
+    else:
+         list_of_tournaments = import_tournaments(open_file(full_path),
+                                                 male_players, female_players, season_2=True)
     # Now have a circuit populated by players and tournaments, along with points and prize money
     return TournamentCircuit(list_of_tournaments, ranking_points,
                              male_players, female_players)
@@ -97,7 +110,7 @@ def import_points(file_row_list):
 
 
 # handles importing tournaments and prize money
-def import_tournaments(file_row_list, male_players, female_players):
+def import_tournaments(file_row_list, male_players, female_players, season_2=False):
         q = Queue()
         s = Stack()
         temp = list()
@@ -170,13 +183,15 @@ def import_tournaments(file_row_list, male_players, female_players):
                 if(code == "Tournament"):
                     break
                 gender = 'MEN'
-                rounds = import_round_results(code, gender)
+
+                rounds = import_round_results(code, gender) if not season_2 else import_season_2_rounds(code, gender)
                 current_tournament = Tournament(code, prize_money, male_players, gender, rounds)
                 list_of_tournaments.append(current_tournament)
 
                 # create new female tournament object
                 gender = 'LADIES'
-                rounds = import_round_results(code, gender)
+
+                rounds = import_round_results(code, gender) if not season_2 else import_season_2_rounds(code, gender)
                 current_tournament = Tournament(code, prize_money, female_players, gender, rounds);
                 list_of_tournaments.append(current_tournament)
                 
@@ -239,3 +254,28 @@ def write_to_file(list_to_write, directory, name_of_file):
     with open('{0}/{1}.csv'.format(directory, name_of_file), 'w', newline='') as file:
         writer = csv.writer(file, delimiter=',')
         writer.writerows(list_to_write)
+
+
+# Save the circuit as pickle file
+def save_current_season(tournament_circuit, season_number):
+    if season_number == 1:
+        text = 'season_one'
+    else:
+        text = 'season_two'
+
+    with open(os.path.join(os.path.dirname(__file__), 'DATA/{0}.pickle'.format(text)), 'wb') as file:
+        pickle.dump(tournament_circuit, file, protocol=pickle.HIGHEST_PROTOCOL)
+
+# Load the current season
+def load_season(season_number):
+    if season_number == 1:
+        text = 'season_one'
+    else:
+        text = 'season_two'
+    with open(os.path.join(os.path.dirname(__file__), 'DATA/{0}.pickle'.format(text)), 'rb') as file:
+         return pickle.load(file)
+
+# Here we deal with managing the creation of season 2, by creating the list of tournaments
+# and the rounds / matches that go with them.enumerate
+def import_season_2_rounds():
+    pass

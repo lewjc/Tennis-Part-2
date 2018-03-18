@@ -1,3 +1,10 @@
+
+class Season:
+    def __init__(self, number, tournament_circuit):
+        self.number = number
+        self.tournament_circuit = tournament_circuit
+        self.unlocked = True if number == 1 else False
+
 class TournamentCircuit:
 
     men = 'MEN'
@@ -10,6 +17,7 @@ class TournamentCircuit:
         self.ranking_points = ranking_points
         self.male_circuit_players = male_circuit_players
         self.female_circuit_players = female_circuit_players
+        self.complete = False
 
 class Player:
 
@@ -26,6 +34,7 @@ class Player:
         self.compare_overall_prize_money = False
         self.compare_tournament_money = False
         self.compare_overall_points = False
+        self.ranking_points = float(self.ranking_points)
 
     # below are methods of comparison for the player objects, each one is determined by a boolean value.
 
@@ -98,6 +107,7 @@ class Tournament:
         self.gender = gender
         self.prize_money = prize_money_allocation
         self.difficulty = self.assign_tournament_difficulty()
+        self.started = False
         self.players = tournament_players
         self.complete = False
         self.current_input_round = 0
