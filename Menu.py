@@ -9,7 +9,7 @@ def clear_terminal():
     os.system('cls' if os.name == 'nt' else 'clear')
     
 # first menu options
-def start_menu(tournament_circuit):
+def start_menu(tournament_circuit, season_number):
     print_title()
     do_print = True
     while True:
@@ -23,8 +23,8 @@ def start_menu(tournament_circuit):
         # load new circuit
         if user_choice == "1":
 
-            season_choice = choose_season(tournament_circuit.complete if tournament_circuit != None else False )        
-            
+            season_choice = choose_season(True if (tournament_circuit != None) and tournament_circuit.complete or season_number == 2 else False)
+
             while True:
                 print('Starting a new Season will erase all of the data associated with the previous season.')
                 print('Continue? [Y/N]')
@@ -41,9 +41,8 @@ def start_menu(tournament_circuit):
 
         # import previous data
         elif user_choice == "2":
-            input(tournament_circuit)            
-
-            season_choice = choose_season(tournament_circuit.complete if tournament_circuit != None  and else False )        
+            
+            season_choice = choose_season(tournament_circuit.complete if tournament_circuit != None and season_number != 2 else True if season_number == 2 else false)
         
             print("Loading Previous Data for season {0}\n".format(season_choice))
             return (user_choice, season_choice) 
@@ -327,7 +326,6 @@ def system_information():
    write corresponding prize money
    
    """
-
 # Exit
 def quit_program():
     sys.exit("----BYE----")
@@ -346,4 +344,4 @@ def strike(text):
         else:
             new_text = colours.RED + new_text + (text[i] + u'\u0336') 
         i = i + 1
-    return(new_text + colours.ENDC)
+    return(new_text + colours.WHITE)

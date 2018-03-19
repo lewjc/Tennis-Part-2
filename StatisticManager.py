@@ -67,7 +67,6 @@ def display_statistics(players, statistic_choice, gender, list_of_tournaments):
         # If we are only checking one tournament
         if len(tournaments_to_view) == 1:
             tournament = tournaments_to_view[0]
-            input(tournament)
             print('\nWin percent in [{0}] is --> '.format(tournament.tournament_code) + (colours.GREEN if win_percent > 50 else colours.RED) + '{0:.2f}%'.format(win_percent) + colours.WHITE)
             print('Out of a total of {} matches \n'.format(total_matches))
         # If we are checking all of the tournaments

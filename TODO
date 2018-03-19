@@ -43,17 +43,23 @@ TODO:
 
     Task - 6 
     
-    A second season will be introduced – player pairings will be governed by player seedings.
+    DONE A second season will be introduced – player pairings will be governed by player seedings.
     The final placements (based on ranking points earned) from the previous season will be used to
-    create the first round pairs for each tournament. The first sixteen in a season cannot play each other
-    in the first round of the tournament. Once in the second round of a tournament, player seedings will
-    be based on the relevant positions achieved in the same tournament during the previous season. So
-    those that have played in the last eight in the previous season of the same tournament cannot face
-    each other in the round of the last sixteen players in the new season, those that have reached the
-    semi-finals in the previous season cannot play each other in the last eight round and finally those
+    create the first round pairs for each tournament. 
+    
+    DONE The first sixteen in a season cannot play each other in the first round of the tournament. 
+    
+    DONE Once in the second round of a tournament, player seedings will be based on the relevant positions achieved in the 
+    same tournament during the previous season. So those that have played in the last eight in the previous season of the same tournament 
+    cannot face each other in the round of the last sixteen players in the new season, 
+    
+    those that have reached the semi-finals in the previous season cannot play each other in the last eight round and finally those
     that have reached the final in the previous season cannot play each other in the semi-finals.
     The points’ difficulty factor (for the tournament) will only be applied if a player has at least achieved
     the same position as per the previous season in the same tournament.
+    
     At the end of each tournament ranking (points and prize money) will be made available to the user
     as choices to see. These will include ranking for the tournament, the current season, or combining
     those of the previous season with the current season. 
+    
+

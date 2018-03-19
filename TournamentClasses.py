@@ -1,3 +1,4 @@
+import QuickSort
 
 class Season:
     def __init__(self, number, tournament_circuit):
@@ -5,7 +6,6 @@ class Season:
         self.tournament_circuit = tournament_circuit
         self.unlocked = True if number == 1 else False
         self.started = False
-
 class TournamentCircuit:
 
     men = 'MEN'
@@ -19,6 +19,21 @@ class TournamentCircuit:
         self.male_circuit_players = male_circuit_players
         self.female_circuit_players = female_circuit_players
         self.complete = False
+
+    @staticmethod
+    def determine_first_16(players):
+        for player in players:
+            player.compare_overall_points = True
+            player.ranking_points = int(player.ranking_points)
+        
+        QuickSort.sort(players)
+        
+        for player in players:
+            player.compare_overall_points = False
+        
+        for i, player in enumerate(players):
+            if i < (len(players) / 2):
+                player.in_first_16 = True
 
 class Player:
 
@@ -35,12 +50,18 @@ class Player:
         self.compare_overall_prize_money = False
         self.compare_tournament_money = False
         self.compare_overall_points = False
+        self.in_first_16 = False
         self.ranking_points = float(self.ranking_points)
+        self.round_achieved_in_tournament = 0
 
     # below are methods of comparison for the player objects, each one is determined by a boolean value.
 
     def __eq__(self, other):
-        return self.name == other.name
+        if type(other) != str:
+            return self.name == other.name
+        else:
+            return self.name == other
+
 
 
     def __gt__(self, other):
@@ -115,6 +136,12 @@ class Tournament:
         self.import_from_file_disabled = False
         self.amount_of_rounds = self.set_amount_of_rounds()
        
+    def __eq__(self, other):
+        if type(other) != Tournament:
+            return False
+
+        return (self.tournament_code == other.tournament_code) and (self.gender == other.gender)
+    
     # determine tournament difficulty
     def assign_tournament_difficulty(self):
         if "TAC1" in self.tournament_code:

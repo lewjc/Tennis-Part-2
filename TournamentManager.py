@@ -10,10 +10,12 @@ import re
 
 from TournamentClasses import *
 
-def input_results(tournament, tournament_circuit, season_number):
+def input_results(tournament, tournament_circuit, season_number, season_one_players=None, season_one_tournament=None):
 
     if season_number == 2:
         season_two = True
+    else: 
+        season_two = False
 
     # Used for money formatting at torunament display start
     locale.setlocale( locale.LC_ALL, '' )
@@ -37,7 +39,6 @@ def input_results(tournament, tournament_circuit, season_number):
     print("==========================================================================\n" + colours.ENDC + colours.WHITE)
     input("--Press ENTER to start--\n")
 
- 
     # enumerate through the list of matches in the tournament
     for round_number, current_round in enumerate(tournament.list_of_rounds):
         # if user has not finished inputting results yet, loop until we are back to the current round
@@ -121,7 +122,6 @@ def input_results(tournament, tournament_circuit, season_number):
             if input_from_file:
                 # Randomise player display
                 if(display_descision == 1):
-
                     player_one = match.winner
                     player_one_score = match.winner_score
                     player_two = match.loser
@@ -137,28 +137,90 @@ def input_results(tournament, tournament_circuit, season_number):
 
                 # Display players available in round
                 print('Players available in this round:\n')
-                player_menu = {i : player  for i, player in enumerate(current_round.list_of_players)}
+                if len(current_round.list_of_players) == 0:
+                    break
+
+                player_menu = {i : player for i, player in enumerate(current_round.list_of_players)}
                 count = 0
-            
                 for i, (k,v) in enumerate(player_menu.items()):   
                     print('[{0}] {1} '.format(f"{k:02}",v),end='')
                     if (i + 1) % 4 == 0 or i == len(player_menu.items()) - 1:
                         print()
                 # Let user choose 2 players
-                print('\nPick 2 players, using their position in the list. write in format x,y ')
+                print('\nPick 2 players, using their position in the list. write in format 1,2 for example.\n press R to redo the last match.')
 
                 # get user's choice of players 
                 while True:
                     choice = Menu.get_user_choice()
-                    if re.search('^\d,\d$', choice):
-                        match_players = choice.split(',')
-                        player_one_index = int(match_players[0])
-                        player_two_index = int(match_players[1])
 
-                        if player_one_index in player_menu.keys() and player_two_index in player_menu.keys():
+                    if choice.lower() == 'r':
+                        if i == 0:
+                            print('This is the first match of the round')
+                        else:
+                            match_to_redo = current_round.list_of_matches[i-1]
+                            match_is_fixed
+                            while True:
+
+                                print('The last match results were: \n')
+                                print_match(match_to_redo.winner, match_to_redo.winner_score, match_to_redo.loser, match_to_redo.loser_score)
+
+                                print('What would you like to change? ')
+                                print('[1] Scores')
+                                print('[2] New players')
+                                print('[3] New players and scores')
+
+                                #TODO: edit last mach,
+                                while True:
+                                    user_choice = Menu.get_user_choice()
+
+                                    if user_choice == '1':
+                                        pass
+                                    elif user_choice == '2':
+                                        pass
+                                    elif user_choice == '3':
+                                        pass
+                    elif re.search('^(\d*),(\d*)$', choice):
+                        match_players = choice.split(',')
+                        try:
+                            player_one_index = int(match_players[0])
+                            player_two_index = int(match_players[1])
+                        except ValueError:
+                            print('[Invalid player choice]')
+                            continue
+
+
+                        if player_one_index in player_menu.keys() and player_two_index in player_menu.keys() and  player_one_index != player_two_index:
                             player_one = current_round.list_of_players[player_one_index]
-                            player_two = current_round.list_of_players[player_two_index]
-                            
+                            player_two = current_round.list_of_players[player_two_index]         
+
+                            # if we are on round 1 of season 2 we need to make sure that these players were not in the last 16
+                            if season_two and current_round.number == 1:  
+                                # Get the player record of if they were in the first 16 and 
+                                player_one_in_first_16 = [player.in_first_16 for player in season_one_players if player == player_one]
+                                player_two_in_first_16 = [player.in_first_16 for player in season_one_players if player == player_two]
+
+                                if player_one_in_first_16[0] and player_two_in_first_16[0]:
+                                    print('\n[Both {0} and {1} were in the first 16 of season 1. please choose a different pairing in format 1,2 for example]\n'.format(player_one, player_two))
+                            # If we are inputting season 2 rounds, we need to check positions of the last tournaments
+                                    continue
+                            elif season_two and 1 < current_round.number < 5:
+                                next_round = current_round.number
+                                # Get the next round of this one but in season 2
+                                season_one_round = season_one_tournament.list_of_rounds[next_round]
+                                played_each_other = False 
+
+                                # Compare the matches of the last season round and if these players have already played each other, they cannot play 
+                                # eachother again
+
+                                for match in season_one_round.list_of_matches:
+                                    played_each_other = True if match.winner == player_one and match.loser == player_two or match.winner == player_two and match.loser == player_one else False
+    
+                                    if played_each_other:
+                                        break
+
+                                if played_each_other:
+                                    print('\n[These players played each other in Round {0} of season 1, please choose a different pairing in format 1,2 for example]\n'.format(current_round.number + 1))
+                                    continue
                         else:
                             print('Invalid player choice')
                             continue
@@ -166,13 +228,13 @@ def input_results(tournament, tournament_circuit, season_number):
                     else:
                         print('Invalid')
                 
-                # Get the user ot input the scores for the match.
+                # Get the user to input the scores for the match.
                 match_results = user_input_score(tournament.gender, player_one, player_two)
 
-                match.winner = match_results[0]
-                match.winner_score = match_results[1]
-                match.loser = match_results[2]
-                match.loser_score = match_results[3]
+                match.winner = player_one = match_results[0]
+                match.winner_score = player_one_score = match_results[1]
+                match.loser = player_two = match_results[2]
+                match.loser_score = player_two_score = match_results[3]
                 # Print new line before result is displayed.
                 print()
 
@@ -296,10 +358,13 @@ def input_results(tournament, tournament_circuit, season_number):
             temp = [player for player in tournament.players if player.name == match.winner]
             winning_player = temp[0]
             temp = [player for player in tournament.players if player.name == match.loser]
-            losing_player = temp[0]
+            losing_player = temp[0] 
 
             # allocate points for the tournament
             winning_player.tournament_points += (float(ranking_points[str(round_number)]) * float(Match.multiply_points(match.score_difference, tournament.gender)))
+            
+            if current_round.number < 5:
+                winning_player.round_achieved_in_tournament = current_round.number + 1
 
             winning_player.wins_in_circuit[tournament.tournament_code].append(match)
             losing_player.losses_in_circuit[tournament.tournament_code].append(match)
@@ -313,11 +378,17 @@ def input_results(tournament, tournament_circuit, season_number):
           
         # Increment current round
         tournament.current_input_round = round_number + 1
+        if season_two:
+            for player in players:
+                for season_one_player in season_one_tournament.players:
+                    if player == season_one_player and player.round_achieved_in_tournament >= season_one_player.round_achieved_in_tournament:
+                        player.tournament_points = float(float(player.tournament_points) * tournament_difficulty)
+                    else:
+                        print('{} did not achieve the same round that they achieved in season 1.'.format(player.name))
+        else:
+            for player in players:
+                player.tournament_points = float(float(player.tournament_points) * tournament_difficulty)
 
-    # After the results are fully Input, we need to multiply the points earned by the tournament difficulty
-    for player in players:
-        player.tournament_points = float(float(player.tournament_points) * tournament_difficulty)
-    
     input('[ANY KEY TO VIEW FINAL RANKINGS]\n')
 
     # print_current_points_ranking(players)
@@ -378,7 +449,7 @@ Current Tournament Rankings
         print(header)
 
     for player in players:
-        line =  " Name: {0} Points: {1:g}".format(player.name, player.tournament_points)
+        line =  " Name: {0} Points: {1:.2f}".format(player.name, player.tournament_points)
         leaderboard_in_list.append(line)
         if not return_value:
             print(line)
@@ -459,10 +530,10 @@ def correct_invalid_score(current_round_number, list_of_rounds, player_one, play
     
     if(player_one in next_round.list_of_players):
         print('\n{0} Exists in the next round, this assumes {1} was injured during round {2}\nBy default, {0} wins.\n'.format(player_one, player_two, current_round_number + 1))
-        return player_is_injured('1', gender, player_one, player_two)
+        return player_is_injured('2', gender, player_one, player_two)
     elif(player_two in next_round.list_of_players):
         print('\n{0} Exists in the next round, this assumes {1} was injured during round {2}\nBy default, {0} wins.\n'.format(player_two, player_one, current_round_number + 1))
-        return player_is_injured('2', gender, player_one, player_two)
+        return player_is_injured('1', gender, player_one, player_two)
     else:
         print('Neither player exists in the next round, {MATCH ERROR}')
         sys.exit()
@@ -489,21 +560,20 @@ def print_final_leaderboard(players):
         if colours_count == (len(colours.list_of_colours) - 1):
             colours_count = 0
         spaces = len(first_elm) - len(line)
-        print(colours.list_of_colours[colours_count] + str(line.strip('\n') + ' '* spaces), end='')
+        print(colours.list_of_colours[colours_count]  +  str(line.strip('\n') + ' '* spaces), end='')
         print('      ' + str(money[i]) + colours.ENDC)
 
         colours_count += 1
 
     print(colours.WHITE +  '')
 
-def check_if_all_tournaments_complete(list_of_tournaments):
+def check_if_all_tournaments_complete(list_of_tournaments, to_print=True):
     # checking if all tournaments complete
     for tournament in list_of_tournaments:
         if not tournament.complete:
             return False
-
-    input("\n[ALL TOURNAMENTS COMPLETE]\n")
+    if to_print:
+        input("\n[ALL TOURNAMENTS COMPLETE]\n")
 
     return True         
   
-                
