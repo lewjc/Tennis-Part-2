@@ -5,7 +5,6 @@ import os
 from TermColours import colours
 
 
-
 def clear_terminal():
     os.system('cls' if os.name == 'nt' else 'clear')
     
@@ -42,8 +41,9 @@ def start_menu(tournament_circuit):
 
         # import previous data
         elif user_choice == "2":
+            input(tournament_circuit)            
 
-            season_choice = choose_season(tournament_circuit.complete if tournament_circuit != None else False )        
+            season_choice = choose_season(tournament_circuit.complete if tournament_circuit != None  and else False )        
         
             print("Loading Previous Data for season {0}\n".format(season_choice))
             return (user_choice, season_choice) 
@@ -52,7 +52,7 @@ def start_menu(tournament_circuit):
             print(system_information())
             do_print = True
             continue
-        elif user_choice == "0":
+        elif user_choice == "0": 
             quit_program()
         else:
             print("Invalid Choice")
@@ -60,6 +60,7 @@ def start_menu(tournament_circuit):
 def choose_season(unlock_second=False):
 
     season_two_text = '[2] Season 2'
+
     if not unlock_second:
         season_two_text = strike(season_two_text) + colours.WHITE
     
@@ -146,28 +147,43 @@ def choose_tournament(tournament_circuit):
     gender_choice = choose_gender()
 
     if gender_choice == '1':
-         gender = TournamentCircuit.men
+        gender = TournamentCircuit.men
     else:
         gender = TournamentCircuit.ladies
     
     tournament_menu = dict()
+
     print("Choose Tournament\n")
 
     # loop through and get each tournament, and allocate it a menu space
     menu_choice = 0
 
+    all_tournaments_complete = 0
+
     for current_tournament in tournament_circuit.list_of_tournaments:
-        
         if current_tournament.gender == gender:
+           
             code_menu_string = '{0} {1}'.format(current_tournament.tournament_code, current_tournament.gender)
+           
             if current_tournament.complete:
+
                 code_menu_string = strike(code_menu_string)
+                all_tournaments_complete += 1
+
             menu_choice = menu_choice + 1
+            
             tournament_menu[str(menu_choice)] = current_tournament.tournament_code
+
             print(colours.WHITE + "[{0}] {1}".format(str(menu_choice), code_menu_string))
+    
         else:
             continue
     
+            
+    if all_tournaments_complete == 4:
+        input(colours.WHITE + '\n[ALL TOURNAMENTS'+ colours.GREEN  +' COMPLETE' + colours.WHITE + ' FOR {0}, ENTER TO GO BACK]\n'.format(gender))
+        return 0
+
     tournament_menu['0'] = "Return"
     print("[{0}] Return".format('0'))
  
@@ -184,7 +200,7 @@ def choose_tournament(tournament_circuit):
             else:
                 tournaments = tournament_circuit.list_of_tournaments
                 # Returns current tournament
-                choice = [tournament for tournament in tournament_circuit.list_of_tournaments if tournament.tournament_code == menu_code]
+                choice = [tournament for tournament in tournament_circuit.list_of_tournaments if tournament.tournament_code == menu_code and tournament.gender == gender]
                 tournament_choice = choice[0]
 
                 if(tournament_choice.complete):

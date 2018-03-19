@@ -3,7 +3,6 @@ from __future__ import print_function # so works on Python 2 and 3 alike
 import Menu
 
 import atexit
-
 import FileManager
 import StatisticManager
 
@@ -32,6 +31,7 @@ def clear_terminal():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 while True:
+    current_season = None
 
     choice = Menu.start_menu(tournament_circuit)
     
@@ -49,7 +49,7 @@ while True:
         # due to the constraints on players.
         if current_season.number == 2:
             current_season.tournament_circuit = Menu.circuit_population_menu(FileManager.get_main_data(True))
-            tournament_circuit = season.tournament_circuit
+            tournament_circuit = current_season.tournament_circuit
         # If season 1, do normal stuff
         else:
             current_season.tournament_circuit = Menu.circuit_population_menu(FileManager.get_main_data())
@@ -68,11 +68,12 @@ while True:
     # Import previous results
     elif user_choice == "2":
         clear_terminal()
-        start = int(season_to_start) - 1
-        list_of_seasons[start].tournament_circuit = FileManager.load_season(current_season.number)
-
-        tournament_circuit = list_of_seasons[int(season_to_start) - 1].tournament_circuit
-
+        if current_season.started or current_season.number == 1:
+            current_season.tournament_circuit = FileManager.load_season(current_season.number)
+        elif current_season.number == 2 and not current_season.started:
+            input('[SEASON {} not yet started, no data to load]'.format(current_season.number))
+            continue
+        tournament_circuit = current_season.tournament_circuit
     else:
        print('Invalid Choice')
 
@@ -80,11 +81,19 @@ while True:
 
     # start main menu
     while True:
+        # Mark the current season as started now, flag used for determining whether or not 
+        if not current_season.started:
+            current_season.started = True
+
         print()
+        # If all of the tournaments are complete, we need to mark the circuit as complete
+        if(TournamentManager.check_if_all_tournaments_complete(tournament_circuit.list_of_tournaments)):
+            tournament_circuit.complete = True
+
         user_choice = Menu.main_menu(current_season.number)
         clear_terminal()
         # start tournament imports
-        if user_choice == '1':
+        if user_choice == '1':              
             tournament_to_input_results = Menu.choose_tournament(tournament_circuit)
 
             # If user wants to return to the main menu
@@ -117,6 +126,7 @@ while True:
                     player_to_add.losses_in_circuit[tournament_to_input_results.tournament_code] = player.losses_in_circuit[tournament_to_input_results.tournament_code]
 
                     # add points and prize money to the overall player records.
+                    player_to_add.ranking_points = float(player_to_add.ranking_points)
                     player_to_add.ranking_points += float(player.tournament_points)
                     player_to_add.prize_money += int(player.tournament_money)
                 

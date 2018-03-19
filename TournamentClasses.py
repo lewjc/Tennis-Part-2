@@ -4,6 +4,7 @@ class Season:
         self.number = number
         self.tournament_circuit = tournament_circuit
         self.unlocked = True if number == 1 else False
+        self.started = False
 
 class TournamentCircuit:
 

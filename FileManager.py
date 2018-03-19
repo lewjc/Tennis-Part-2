@@ -182,17 +182,20 @@ def import_tournaments(file_row_list, male_players, female_players, season_2=Fal
                 code.replace(" ","")
                 if(code == "Tournament"):
                     break
+
                 gender = 'MEN'
 
-                rounds = import_round_results(code, gender) if not season_2 else import_season_2_rounds(code, gender)
+                rounds = import_round_results(code, gender) if not season_2 else import_round_results(code, gender,season_2=True)
                 current_tournament = Tournament(code, prize_money, male_players, gender, rounds)
+                current_tournament.import_from_file_disabled = True if season_2 else False 
                 list_of_tournaments.append(current_tournament)
 
                 # create new female tournament object
                 gender = 'LADIES'
 
-                rounds = import_round_results(code, gender) if not season_2 else import_season_2_rounds(code, gender)
+                rounds = import_round_results(code, gender) if not season_2 else import_round_results(code, gender,season_2=True)
                 current_tournament = Tournament(code, prize_money, female_players, gender, rounds);
+                current_tournament.import_from_file_disabled = True if season_2 else False 
                 list_of_tournaments.append(current_tournament)
                 
             else:
@@ -203,7 +206,7 @@ def import_tournaments(file_row_list, male_players, female_players, season_2=Fal
         return list_of_tournaments
     
 # managing the first round results
-def import_round_results(tournament_code, gender):
+def import_round_results(tournament_code, gender, season_2=False):
 
     list_of_rounds = list()
     # loop through all of the rounds for the tournament
@@ -230,16 +233,18 @@ def import_round_results(tournament_code, gender):
             score_difference = match_results[1]
 
             # Determine the winner and create the match 
-            if winning_score == 1:
+            if winning_score == 1 and not season_2:
                 current_match = Match(player_one, score_one, player_two, score_two, score_difference)
-            elif winning_score == 2:
+            elif winning_score == 2 and not season_2:
                 current_match = Match(player_two, score_two, player_one, score_one, score_difference)
             # if the score is 3, this means that we have an incorrect match. durinng processing this will be corrected
-            elif winning_score == 3:
+            elif winning_score == 3 and not season_2:
                 current_match = Match(player_one, 0, player_two, 0, score_difference, True)
+            # If season 2 then we initialise the matches, they will be filled with results input by the user
+            elif season_2:
+                current_match = Match('',0,'',0,0)
 
             list_of_matches.append(current_match)
-
 
         # Create new round object and append it to the list of rounds to be stored wihtin the tournament
         list_of_rounds.append(Round(i+1, list_of_matches, list_of_players))
@@ -274,8 +279,3 @@ def load_season(season_number):
         text = 'season_two'
     with open(os.path.join(os.path.dirname(__file__), 'DATA/{0}.pickle'.format(text)), 'rb') as file:
          return pickle.load(file)
-
-# Here we deal with managing the creation of season 2, by creating the list of tournaments
-# and the rounds / matches that go with them.enumerate
-def import_season_2_rounds():
-    pass

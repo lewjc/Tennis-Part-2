@@ -11,6 +11,10 @@ import re
 from TournamentClasses import *
 
 def input_results(tournament, tournament_circuit, season_number):
+
+    if season_number == 2:
+        season_two = True
+
     # Used for money formatting at torunament display start
     locale.setlocale( locale.LC_ALL, '' )
 
@@ -51,11 +55,13 @@ def input_results(tournament, tournament_circuit, season_number):
             if user_choice == '1' and not tournament.import_from_file_disabled:
                 input_from_file = True
                 break
-            elif user_choice == '1' and tournament.import_from_file_disabled:
+            elif user_choice == '1' and tournament.import_from_file_disabled and not season_two:
                 print('You have previously chosen to input results from file. This option is disabled because the system '  
                       'cannot guarantee\n you have input results which will be the same as the results the system has on file.\n')
                 continue
-
+            elif user_choice == '1' and season_two:
+                print('You are unable to import results from file in season 2 as we do not have any results on file for it.\n')
+                continue    
             elif user_choice == '2' and not tournament.import_from_file_disabled:
                 print('By selecting to input from the results yourself, you are voiding the rest of the scores for ' +
                     'this tournament stored in the file system\nYou are unable to import results from file from here on out for this tournement.\ncontinue? [Y/N]')
@@ -489,3 +495,15 @@ def print_final_leaderboard(players):
         colours_count += 1
 
     print(colours.WHITE +  '')
+
+def check_if_all_tournaments_complete(list_of_tournaments):
+    # checking if all tournaments complete
+    for tournament in list_of_tournaments:
+        if not tournament.complete:
+            return False
+
+    input("\n[ALL TOURNAMENTS COMPLETE]\n")
+
+    return True         
+  
+                
