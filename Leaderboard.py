@@ -87,42 +87,40 @@ def display_overall_money_leaderboard(gender, tournament_circuit, season_number,
 
     # If we are viewing season 1
     if season_to_display == '1' or season_to_display == '2':
+        if season_number == 1 and season_one_circuit == None and season_to_display == '1':
+            circuit = tournament_circuit
+        elif season_number == 2 and season_one_circuit != None and season_to_display == '1':
+            [print(player.prize_money) for player in season_one_circuit.male_circuit_players]
+            circuit = season_one_circuit
+        elif season_number == 2 and season_one_circuit != None and season_to_display == '2':
+            circuit = tournament_circuit
+        
         if gender == "1":
-            players = tournament_circuit.male_circuit_players
+            players = circuit.male_circuit_players
         else:
-            players = tournament_circuit.female_circuit_players
+            players = circuit.female_circuit_players
     # We are combining both seasons
     else:
         overall_players = list()
         if gender == "1":
-            players = tournament_circuit.male_circuit_players
+            players = circuit.male_circuit_players
             season_one_players = season_one_circuit.male_circuit_players
         else:
-            players = tournament_circuit.female_circuit_players
+            players = circuit.female_circuit_players
             season_one_players = season_one_circuit.female_circuit_players
 
     # We are combining both seasons
         for player in players:
             for season_one_player in season_one_players:
                 if player == season_one_player:
-                    player_with_both_points = Player(player.name) 
-                    player_with_both_points.prize_money = player.prize_money + season_one_player.prize_money
-                    overall_players.append(player_with_both_points)
-                    
-        players = overall_players    
-    
+                    player_with_both_money = Player(player.name) 
+                    player_with_both_money.prize_money = player.prize_money + season_one_player.prize_money
+                    overall_players.append(player_with_both_money)
 
-    season_choice = Menu.choose_season(True if season_number == 2 else False)
+        players = overall_players    
 
     locale.setlocale( locale.LC_ALL, '' )
 
-    if gender == "1":
-        players = tournament_circuit.male_circuit_players
-
-    else:
-        players = tournament_circuit.female_circuit_players
-
-    print("\n")
     print(colours.BEIGE + "====================================")
     print("|  OVERALL PRIZE MONEY LEADERBOARD  |")
     print("====================================\n" + colours.WHITE)
@@ -133,7 +131,6 @@ def display_overall_money_leaderboard(gender, tournament_circuit, season_number,
     list_of_players = QuickSort.sort(players)
     for player in players:
         player.compare_overall_prize_money = False
-
 
     # string formatting for leaderboard display
     for i, player in enumerate(list_of_players):

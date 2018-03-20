@@ -404,7 +404,7 @@ def input_results(tournament, tournament_circuit, season_number, season_one_play
     else:
         for player in players:
             player.tournament_points = float(float(player.tournament_points) * tournament_difficulty)
-
+        
 
     input('[ANY KEY TO VIEW FINAL RANKINGS]\n')
 

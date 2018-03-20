@@ -49,16 +49,16 @@ TODO:
     
     DONE The first sixteen in a season cannot play each other in the first round of the tournament. 
     
-    DONE Once in the second round of a tournament, player seedings will be based on the relevant positions achieved in the 
+    DONE: Once in the second round of a tournament, player seedings will be based on the relevant positions achieved in the 
     same tournament during the previous season. So those that have played in the last eight in the previous season of the same tournament 
     cannot face each other in the round of the last sixteen players in the new season, 
     
-    those that have reached the semi-finals in the previous season cannot play each other in the last eight round and finally those
+    DONE: those that have reached the semi-finals in the previous season cannot play each other in the last eight round and finally those
     that have reached the final in the previous season cannot play each other in the semi-finals.
     The points’ difficulty factor (for the tournament) will only be applied if a player has at least achieved
     the same position as per the previous season in the same tournament.
     
-    At the end of each tournament ranking (points and prize money) will be made available to the user
+    DONE: At the end of each tournament ranking (points and prize money) will be made available to the user
     as choices to see. These will include ranking for the tournament, the current season, or combining
     those of the previous season with the current season. 
     
