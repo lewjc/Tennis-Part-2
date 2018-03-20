@@ -157,17 +157,17 @@ def choose_tournament(tournament_circuit):
     # loop through and get each tournament, and allocate it a menu space
     menu_choice = 0
 
-    all_tournaments_complete = 0
-
+    all_tournaments_complete = True
     for current_tournament in tournament_circuit.list_of_tournaments:
         if current_tournament.gender == gender:
            
             code_menu_string = '{0} {1}'.format(current_tournament.tournament_code, current_tournament.gender)
            
-            if current_tournament.complete:
-
+            if not current_tournament.complete:
+                all_tournaments_complete = False
+            else:
                 code_menu_string = strike(code_menu_string)
-                all_tournaments_complete += 1
+              
 
             menu_choice = menu_choice + 1
             
@@ -179,7 +179,7 @@ def choose_tournament(tournament_circuit):
             continue
     
             
-    if all_tournaments_complete == 4:
+    if all_tournaments_complete:
         input(colours.WHITE + '\n[ALL TOURNAMENTS'+ colours.GREEN  +' COMPLETE' + colours.WHITE + ' FOR {0}, ENTER TO GO BACK]\n'.format(gender))
         return 0
 

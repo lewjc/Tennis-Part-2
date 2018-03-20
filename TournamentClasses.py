@@ -52,8 +52,6 @@ class Player:
         self.compare_overall_points = False
         self.in_first_16 = False
         self.ranking_points = float(self.ranking_points)
-        self.round_achieved_in_tournament = 0
-
     # below are methods of comparison for the player objects, each one is determined by a boolean value.
 
     def __eq__(self, other):
@@ -135,6 +133,7 @@ class Tournament:
         self.current_input_round = 0
         self.import_from_file_disabled = False
         self.amount_of_rounds = self.set_amount_of_rounds()
+        self.overall_rankings = dict()
        
     def __eq__(self, other):
         if type(other) != Tournament:

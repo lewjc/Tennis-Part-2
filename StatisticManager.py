@@ -158,6 +158,7 @@ def get_highest_wins_or_losses(players, wins=True):
     
     print_text = ''
     players_with_highest_number = list()
+    
     for i, player in enumerate(players):
 
         # get current wins or losses of the current player

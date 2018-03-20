@@ -94,9 +94,8 @@ while True:
         # Mark the current season as started now, flag used for determining whether or not 
         if not current_season.started:
             current_season.started = True
-
         # If all of the tournaments are complete, we need to mark the circuit as complete
-        if(TournamentManager.check_if_all_tournaments_complete(tournament_circuit.list_of_tournaments)):
+        if not tournament_circuit.complete and TournamentManager.check_if_all_tournaments_complete(tournament_circuit.list_of_tournaments):
             tournament_circuit.complete = True
             TournamentCircuit.determine_first_16(tournament_circuit.male_circuit_players)
             TournamentCircuit.determine_first_16(tournament_circuit.female_circuit_players)
@@ -127,9 +126,12 @@ while True:
             current_input_round = tournament_results[0]
 
             # Is none when the results are fully entered, will allocate the tournament points and money in 
-            # that the players have achieved in the tournament and add to their overall points and prize money
+            # that the players have achieved in the tournament and add to their overall points and prize money7
+
+
+            players_in_tournament = tournament_results[1]
+
             if current_input_round == None:
-                players_in_tournament = tournament_results[1]
                 if tournament_to_input_results.gender == "LADIES":
                     overall_players = tournament_circuit.female_circuit_players
                 else:
@@ -138,7 +140,7 @@ while True:
                 # Loop through the the players in the tournament and the overall players and 
                 # add overall points and money to the right person
                 for player in players_in_tournament:
-                    temp = [overall_player for overall_player in overall_players if player.name == overall_player.name]
+                    temp = [overall_player for overall_player in overall_players if player == overall_player]
                     
                     # get the player
                     player_to_add = temp[0]
@@ -149,24 +151,27 @@ while True:
                     # add points and prize money to the overall player records.
                     player_to_add.ranking_points = float(player_to_add.ranking_points)
                     player_to_add.ranking_points += float(player.tournament_points)
-                    player_to_add.prize_money += int(player.tournament_money)
-                
-                    # reset tournament points and money
-                    player_to_add.tournament_money = 0
-                    player_to_add.tournament_points = 0
 
+                    player_to_add.prize_money += int(player.tournament_money)
+            
+            for player in players_in_tournament:
+                # reset tournament points and money
+                player.tournament_money = 0
+                player.tournament_points = 0
+
+                    
             # Save the information about the season
             FileManager.save_current_season(tournament_circuit, current_season.number)
 
         # view current season ranking points
         elif user_choice == '2':
             gender = Menu.choose_gender()
-            Leaderboard.display_overall_points_leaderboard(gender, tournament_circuit)
+            Leaderboard.display_overall_points_leaderboard(gender, tournament_circuit, current_season.number, list_of_seasons[0].tournament_circuit if current_season.number == 2 else None)
             
         # view current season prize money
         elif user_choice == '3':
             gender = Menu.choose_gender()
-            Leaderboard.display_overall_money_leaderboard(gender, tournament_circuit)
+            Leaderboard.display_overall_money_leaderboard(gender, tournament_circuit, current_season.number, list_of_seasons[0].tournament_circuit if current_season.number == 2 else None)
 
         # Loading statistics
         elif user_choice == '4':

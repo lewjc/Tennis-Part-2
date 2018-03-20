@@ -23,5 +23,4 @@ def quick_sort(lst, start, end):
 
 def sort(lst):
     quick_sort(lst, 0, len(lst) - 1)
-
     return lst
