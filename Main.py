@@ -153,7 +153,6 @@ while True:
                     player_to_add.ranking_points += float(player.tournament_points)
 
                     player_to_add.prize_money += int(player.tournament_money)
-                    print(player_to_add.prize_money)
             
             for player in players_in_tournament:
                 # reset tournament points and money

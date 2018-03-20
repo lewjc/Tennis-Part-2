@@ -150,9 +150,9 @@ def input_results(tournament, tournament_circuit, season_number, season_one_play
 
                 player_menu = {i : player for i, player in enumerate(current_round.list_of_players)}
                 count = 0
-                for i, (k,v) in enumerate(player_menu.items()):   
+                for j, (k,v) in enumerate(player_menu.items()):   
                     print('[{0}] {1} '.format(f"{k:02}",v),end='')
-                    if (i + 1) % 4 == 0 or i == len(player_menu.items()) - 1:
+                    if (j + 1) % 4 == 0 or j == len(player_menu.items()) - 1:
                         print()
                 # Let user choose 2 players
                 print('\nPick 2 players, using their position in the list. write in format 1,2 for example.\npress R to redo the last match.')
@@ -160,29 +160,31 @@ def input_results(tournament, tournament_circuit, season_number, season_one_play
                 # get user's choice of players 
                 while True:
                     choice = Menu.get_user_choice()
-
+                    input(i)
                     if choice.lower() == 'r':
                         if i == 0:
                             print('This is the first match of the round')
                         else:
-                            match_to_redo = current_round.list_of_matches[i-1]
-                            match_is_fixed
-                            while True:
+                            try:
+                                match_to_redo = current_round.list_of_matches[i-1]
+                            except IndexError:
+                                print('There is no match')
+
+                            match_is_fixed = False
+                            while not match_is_fixed:
 
                                 print('The last match results were: \n')
                                 print_match(match_to_redo.winner, match_to_redo.winner_score, match_to_redo.loser, match_to_redo.loser_score)
 
-                                print('What would you like to change?')
+                                print('What would you like to change?\n')
                                 print('[1] Scores')
                                 print('[2] New players')
                                 print('[3] New players and scores')
 
-                                #TODO: edit last mach,
                                 while True:
                                     user_choice = Menu.get_user_choice()
                                     if user_choice == '1':
                                         
-                                        pass
                                     elif user_choice == '2':
                                         pass
                                     elif user_choice == '3':
@@ -368,7 +370,7 @@ def input_results(tournament, tournament_circuit, season_number, season_one_play
             losing_player = temp[0] 
 
             # allocate points for the tournament
-            winning_player.tournament_points += (float(ranking_points[str(round_number)]) * float(Match.multiply_points(match.score_difference, tournament.gender)))
+            winning_player.tournament_points += (float(ranking_points[str(round_number)]) * float(Match.multiply_points(match.score_difference, tournament.gender) * tournament.difficulty))
             
             if current_round.number < 5:
                 winning_player.round_achieved_in_tournament = current_round.number + 1
@@ -401,11 +403,6 @@ def input_results(tournament, tournament_circuit, season_number, season_one_play
                     else:
                         print('{} did not achieve the same round that they achieved in season 1.'.format(player.name))
                     break
-    else:
-        for player in players:
-            player.tournament_points = float(float(player.tournament_points) * tournament_difficulty)
-        
-
     input('[ANY KEY TO VIEW FINAL RANKINGS]\n')
 
     # print_current_points_ranking(players)
