@@ -395,6 +395,8 @@ def input_results(tournament, tournament_circuit, season_number, season_one_play
             # IF USING THIS BE SURE TO UPDATE THE FILE MANAGER FUNCTION IMPORT POINTS, 
             # AS TO IMPORT CORRECTLY
 
+            # 
+
             #winning_player.tournament_points += (float(ranking_points[str(round_number)]) * float(Match.multiply_points(match.score_difference, tournament.gender) * tournament.difficulty))
 
             # START ALTERNATE POINTS ALLOCATION
@@ -402,6 +404,14 @@ def input_results(tournament, tournament_circuit, season_number, season_one_play
 
             # If we are on rounds 2 - 4, allocate points as normal, we dont add any points 
             # to players when they go into the final from the semi final
+            # THERE is an alternate way to input points, by using this instead of the one below
+            # this is the method provided by Elias in the additional clarification however i am pretty confused
+            # There are 3 methods for inputting points here, and all 3 have been told to me they are the right
+            # way at some point along this coursework duration. Whichever one it is, you can comment and uncomment 
+            # and use it 
+            # if 1 < current_round.number < 5:
+                # winning_player.tournament_points += (float(ranking_points[str(round_number - 1)]) * multiplier * tournament.difficulty if season_two else 1 )
+            
             if 0 < current_round.number < 4:
                 winning_player.tournament_points += (float(ranking_points[str(round_number)]) * multiplier * tournament.difficulty if season_two else 1 )
             
