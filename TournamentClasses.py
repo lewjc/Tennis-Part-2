@@ -32,9 +32,9 @@ class TournamentCircuit:
             player.compare_overall_points = False
         
         for i, player in enumerate(players):
-            if i < (len(players) / 2):
+            if i < (len(players) / 2):            
                 player.in_first_16 = True
-
+                
 class Player:
 
     initialize_tournament_points = 0
@@ -105,6 +105,9 @@ class Player:
             return self.tournament_points <= other.tournament_points
 
     # clear current tournament points
+
+    def compare_ranking_points():
+        self.compare_overall_points
 
     def reset_tournament_points(self):
         self.tournament_points = 0

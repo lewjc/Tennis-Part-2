@@ -47,7 +47,7 @@ TODO:
     The final placements (based on ranking points earned) from the previous season will be used to
     create the first round pairs for each tournament. 
     
-    DONE The first sixteen in a season cannot play each other in the first round of the tournament. 
+    DONE The first sixteen in a 6t cannot play each other in the first round of the tournament. 
     
     DONE: Once in the second round of a tournament, player seedings will be based on the relevant positions achieved in the 
     same tournament during the previous season. So those that have played in the last eight in the previous season of the same tournament 
@@ -63,3 +63,17 @@ TODO:
     those of the previous season with the current season. 
     
 
+
+    players hold tournament money and tournament points and overall money and points
+
+    each tournament has a dictionary which as a key contains a player name and as a value holds a 
+    TUPLE which contains the current players points and prize money for that tournament
+
+    whenever someone wins, I add the ranking points to be added on that round * the score difference factor 
+    * the tournament difficulty
+
+    whenever we exit the tournamnet, we store the tournament money and points in the dict as 
+    mentioned above, then we clear the current tournament points and money 
+
+    if when we quit, the tournamnet is finished, we add the tournament points and money 
+    stored in the player object to their overall points value

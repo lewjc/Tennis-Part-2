@@ -165,6 +165,6 @@ def determine_what_season_to_display(season_number):
 
         return season_choice
     else:
-        print('Invalid Choice \n')
+        input('Invalid Choice \n')
         Menu.clear_terminal()
         return determine_what_season_to_display(season_number)

@@ -87,8 +87,17 @@ def import_points(file_row_list):
             round_count += 1 
 
     points_to_add_each_round = dict()
+    # Remove original 0
+    points_in_file.pop(0)
+
+    for i,point_allocation in enumerate(points_in_file):
+        points_to_add_each_round[str(i)] = point_allocation
+    return points_to_add_each_round
+
 
     # Manipulate the points so that we get the difference in points each round
+    # THIS IS NECESSARY FOR IF WE ARE USING THE POINTS ALLOCATION FROM PART A, ELIAS FOR SOME
+    # REASON THINKS IT NEEDS TO BE CHANGED. I DONT KNOW
 
     for current_round, item in enumerate(points_in_file):
     

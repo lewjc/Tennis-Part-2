@@ -150,46 +150,63 @@ def input_results(tournament, tournament_circuit, season_number, season_one_play
 
                 player_menu = {i : player for i, player in enumerate(current_round.list_of_players)}
                 count = 0
+                
                 for j, (k,v) in enumerate(player_menu.items()):   
                     print('[{0}] {1} '.format(f"{k:02}",v),end='')
                     if (j + 1) % 4 == 0 or j == len(player_menu.items()) - 1:
                         print()
-                # Let user choose 2 players
-                print('\nPick 2 players, using their position in the list. write in format 1,2 for example.\npress R to redo the last match.')
+
+                if season_two and current_round.number == 1:
+                   print('\nPick one player from the list using their positon, for example 1 is the first person in the list.')
+                else:    # Let user choose 2 players
+                    print('\nPick 2 players, using their position in the list. write in format 1,2 for example.\n')
 
                 # get user's choice of players 
                 while True:
+
                     choice = Menu.get_user_choice()
-                    input(i)
-                    if choice.lower() == 'r':
-                        if i == 0:
-                            print('This is the first match of the round')
+
+                    if season_two and re.search('^(\d*)$', choice) and current_round.number == 1:
+                        player_one_index = int(choice)
+
+                        if player_one_index in player_menu.keys():
+                            player_one = current_round.list_of_players[player_one_index]
+                            player_in_first_16 = [player.in_first_16 for player in season_one_players if player == player_one]
+
+                            available_players = [player for player in season_one_players if (player.name in current_round.list_of_players) and  ((player.in_first_16 and not player_in_first_16[0]) or (player_in_first_16[0] and not player.in_first_16))]
+
+                            player_menu = {i : player.name for i, player in enumerate(available_players)}
+
+                            print('Pick another player from the available players list Below.\n')
+
+                            for j, (k,v) in enumerate(player_menu.items()):   
+                                print('[{0}] {1} '.format(f"{k:02}",v),end='')
+                                if (j + 1) % 4 == 0 or j == len(player_menu.items()) - 1:
+                                    print()
+                                    
+                            while True:
+
+                                second_choice = Menu.get_user_choice()
+
+                                if re.search('^(\d*)$', second_choice):
+                                    try: 
+                                        if int(second_choice) in player_menu.keys():
+                                            player_two_index = int(second_choice)
+                                            player_two = available_players[player_two_index].name
+                                            break
+                                        else:
+                                            print('Invalid player choice')
+                                    except ValueError:
+                                        print('Invalid option')
+                                        continue
+                                else:
+                                    print('Invalid Choice')         
+                            break
+                                
                         else:
-                            try:
-                                match_to_redo = current_round.list_of_matches[i-1]
-                            except IndexError:
-                                print('There is no match')
+                            print('Invalid player choice')
 
-                            match_is_fixed = False
-                            while not match_is_fixed:
-
-                                print('The last match results were: \n')
-                                print_match(match_to_redo.winner, match_to_redo.winner_score, match_to_redo.loser, match_to_redo.loser_score)
-
-                                print('What would you like to change?\n')
-                                print('[1] Scores')
-                                print('[2] New players')
-                                print('[3] New players and scores')
-
-                                while True:
-                                    user_choice = Menu.get_user_choice()
-                                    if user_choice == '1':
-                                        
-                                    elif user_choice == '2':
-                                        pass
-                                    elif user_choice == '3':
-                                        pass
-                    elif re.search('^(\d*),(\d*)$', choice):
+                    elif re.search('^(\d*),(\d*)$', choice) and (not season_two and current_round.number == 1) or (season_two and current_round.number > 1):
                         match_players = choice.split(',')
                         try:
                             player_one_index = int(match_players[0])
@@ -198,7 +215,7 @@ def input_results(tournament, tournament_circuit, season_number, season_one_play
                             print('[Invalid player choice]')
                             continue
 
-
+                        # 
                         if player_one_index in player_menu.keys() and player_two_index in player_menu.keys() and  player_one_index != player_two_index:
                             player_one = current_round.list_of_players[player_one_index]
                             player_two = current_round.list_of_players[player_two_index]         
@@ -224,6 +241,7 @@ def input_results(tournament, tournament_circuit, season_number, season_one_play
 
                                 for match in season_one_round.list_of_matches:
                                     played_each_other = True if match.winner == player_one and match.loser == player_two or match.winner == player_two and match.loser == player_one else False
+                                   
                                     if played_each_other:
                                         break
 
@@ -240,6 +258,8 @@ def input_results(tournament, tournament_circuit, season_number, season_one_play
                 # Get the user to input the scores for the match.
                 match_results = user_input_score(tournament.gender, player_one, player_two)
                 
+                # Allocate winner and loser from the user input score
+
                 match.winner = player_one = match_results[0]
                 match.winner_score = player_one_score = match_results[1]
                 match.loser = player_two = match_results[2]
@@ -268,14 +288,14 @@ def input_results(tournament, tournament_circuit, season_number, season_one_play
                        match.loser = new_match_results[2]
                        match.loser_score = new_match_results[3]
                        score_corrected = True
-                       
+                    # User wants to correct the score themselves.
                     elif user_choice.lower() == 'n':
 
                         print('By choosing to manually correct the score, you are voiding the rest of the scores that are on file for this tournament.\n'
                               'You will be unable to import scores for the rest of the tournament and must type remaining scores in manually.\nPress [Y] to confirm, any other key to let the system correct the error.')
                        
                         user_choice = Menu.get_user_choice()
-                       
+                        # The user wants to correct the score themselves. 
                         if user_choice.lower() == 'y':
 
                             tournament.import_from_file_disabled = True
@@ -340,6 +360,7 @@ def input_results(tournament, tournament_circuit, season_number, season_one_play
                             # Prints new line, meny looks cleaner 
                             print()
                         else:
+                            # the user wants the system to correct the invalid score.
                             new_match_results = correct_invalid_score(round_number, tournament.list_of_rounds, player_one, player_two, tournament.gender)
                        
                             match.winner = new_match_results[0]
@@ -354,6 +375,7 @@ def input_results(tournament, tournament_circuit, season_number, season_one_play
                 
                 print_match(match.winner, match.winner_score, match.loser, match.loser_score)
             else:
+                 # If the match is alll okay
                 print_match(player_one, player_one_score, player_two, player_two_score)
                 
             # Output info about the winner and loser
@@ -369,12 +391,28 @@ def input_results(tournament, tournament_circuit, season_number, season_one_play
             temp = [player for player in tournament.players if player.name == match.loser]
             losing_player = temp[0] 
 
-            # allocate points for the tournament
-            winning_player.tournament_points += (float(ranking_points[str(round_number)]) * float(Match.multiply_points(match.score_difference, tournament.gender) * tournament.difficulty))
-            
-            if current_round.number < 5:
-                winning_player.round_achieved_in_tournament = current_round.number + 1
+            # allocate points for the tournament HERE IS THE ORIGINAL POINTS ALLOCATION,  
+            # IF USING THIS BE SURE TO UPDATE THE FILE MANAGER FUNCTION IMPORT POINTS, 
+            # AS TO IMPORT CORRECTLY
 
+            #winning_player.tournament_points += (float(ranking_points[str(round_number)]) * float(Match.multiply_points(match.score_difference, tournament.gender) * tournament.difficulty))
+
+            # START ALTERNATE POINTS ALLOCATION
+            multiplier = float(Match.multiply_points(match.score_difference, tournament.gender))
+
+            # If we are on rounds 2 - 4, allocate points as normal, we dont add any points 
+            # to players when they go into the final from the semi final
+            if 0 < current_round.number < 4:
+                winning_player.tournament_points += (float(ranking_points[str(round_number)]) * multiplier * tournament.difficulty)
+            
+            # HERE WE ADD FINAL POINTS, DEPENDING ON WINNER OR LOSER. LOSER = 50 * TOURNAMENT DIFFICULTY,  
+            # WINNER = 100  * DIFFICULTY * MULTIPLIER (IF APPLICABLE)
+
+            elif current_round.number == 5:
+                winning_player.tournament_points += (float(ranking_points[str(round_number)]) * multiplier * tournament.difficulty)
+                losing_player.tournament_points += (float(ranking_points[str(round_number - 1)]) * tournament.difficulty)
+           
+            # Add this match to the winnner or losers respective wins or losses ( Statistics )
             winning_player.wins_in_circuit[tournament.tournament_code].append(match)
             losing_player.losses_in_circuit[tournament.tournament_code].append(match)
 
@@ -504,6 +542,7 @@ def user_input_score(gender, player_one=None, player_two=None,statistics=False):
 
             # check if match score is valid and get the score difference
             score_evaluation_results = Match.evaluate_match_score(score_one, score_two, gender)
+
             # If the evaluation returns 3, this means that the score was incorrect
 
             if score_evaluation_results[0] != 3 and statistics:
