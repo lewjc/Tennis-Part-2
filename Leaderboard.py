@@ -10,7 +10,6 @@ import locale
 
 def display_overall_points_leaderboard(gender, tournament_circuit, season_number, season_one_circuit=None):
 
-
     season_to_display = determine_what_season_to_display(season_number)
 
     # If we are viewing season 1
@@ -44,11 +43,10 @@ def display_overall_points_leaderboard(gender, tournament_circuit, season_number
             for season_one_player in season_one_players:
                 if player == season_one_player:
                     player_with_both_points = Player(player.name) 
-                    player_with_both_points.ranking_points = int(player.ranking_points) + int(season_one_player.ranking_points)
+                    player_with_both_points.ranking_points = float(player.ranking_points) + float(season_one_player.ranking_points)
                     overall_players.append(player_with_both_points)
 
         players = overall_players    
-    
 
     print("\n SEASON {}\n".format(season_to_display if season_to_display == '1' or season_to_display == '2' else 'BOTH')) 
     print(colours.BEIGE + "=====================================")
@@ -58,11 +56,11 @@ def display_overall_points_leaderboard(gender, tournament_circuit, season_number
     # use correct comparison method when performing quick-sort
     for player in players:
         player.compare_overall_points = True
-        player.ranking_points = int(player.ranking_points)
+
     list_of_players = QuickSort.sort(players)
     for player in list_of_players:
-        player.ranking_points = str(player.ranking_points)
         player.compare_overall_points = False
+
 
     for i, player in enumerate(list_of_players):
         rank = str(i+1)
@@ -70,12 +68,8 @@ def display_overall_points_leaderboard(gender, tournament_circuit, season_number
         # String formatting for leader board display
         if i < 9:
             rank = "0" + rank
-        if points < 10:
-            points = "00" + str(points)
-        elif 10 < points < 100:
-            points = "0" + str(points)
-
-        print("Rank:[{0}]  Name: {1}  Points: {2:g}".format(rank, player.name, float(points)))
+    
+        print("Rank:[{0}]  Name: {1}  Points: {2:.2f}".format(rank, player.name, float(points)))
     input("\n--ENTER--\n")
 
     return tournament_circuit

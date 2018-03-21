@@ -90,7 +90,6 @@ while True:
 
     # start main menu
     while True:
-
         # Mark the current season as started now, flag used for determining whether or not 
         if not current_season.started:
             current_season.started = True
@@ -141,7 +140,6 @@ while True:
                 # add overall points and money to the right person
                 for player in players_in_tournament:
                     temp = [overall_player for overall_player in overall_players if player == overall_player]
-                    
                     # get the player
                     player_to_add = temp[0]
                     # add wins and losses  from this tournament to their record, used for statistics
@@ -149,8 +147,8 @@ while True:
                     player_to_add.losses_in_circuit[tournament_to_input_results.tournament_code] = player.losses_in_circuit[tournament_to_input_results.tournament_code]
 
                     # add points and prize money to the overall player records.
-                    player_to_add.ranking_points = float(player_to_add.ranking_points)
-                    player_to_add.ranking_points += float(player.tournament_points)
+                    
+                    player_to_add.set_ranking_points(player.tournament_points)
 
                     player_to_add.prize_money += int(player.tournament_money)
             
@@ -162,6 +160,7 @@ while True:
                     
             # Save the information about the season
             FileManager.save_current_season(tournament_circuit, current_season.number)
+            continue
 
         # view current season ranking points
         elif user_choice == '2':

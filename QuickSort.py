@@ -20,7 +20,6 @@ def quick_sort(lst, start, end):
     quick_sort(lst, start, new_pivot - 1)
     quick_sort(lst, new_pivot + 1, end)
 
-
 def sort(lst):
     quick_sort(lst, 0, len(lst) - 1)
     return lst

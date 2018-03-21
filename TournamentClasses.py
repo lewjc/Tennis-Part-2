@@ -24,7 +24,7 @@ class TournamentCircuit:
     def determine_first_16(players):
         for player in players:
             player.compare_overall_points = True
-            player.ranking_points = int(player.ranking_points)
+            player.ranking_points = float(player.ranking_points)
         
         QuickSort.sort(players)
         
@@ -34,7 +34,7 @@ class TournamentCircuit:
         for i, player in enumerate(players):
             if i < (len(players) / 2):            
                 player.in_first_16 = True
-                
+
 class Player:
 
     initialize_tournament_points = 0
@@ -43,7 +43,7 @@ class Player:
         self.name = player_name
         self.prize_money = 0
         self.ranking_points = 0
-        self.tournament_points = 0
+        self.tournament_points = 0 
         self.tournament_money = 0
         self.wins_in_circuit = dict()
         self.losses_in_circuit = dict()
@@ -51,8 +51,11 @@ class Player:
         self.compare_tournament_money = False
         self.compare_overall_points = False
         self.in_first_16 = False
-        self.ranking_points = float(self.ranking_points)
+        
     # below are methods of comparison for the player objects, each one is determined by a boolean value.
+
+    def set_ranking_points(self, points):
+        self.ranking_points += points
 
     def __eq__(self, other):
         if type(other) != str:

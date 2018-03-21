@@ -167,6 +167,7 @@ def input_results(tournament, tournament_circuit, season_number, season_one_play
                     choice = Menu.get_user_choice()
 
                     if season_two and re.search('^(\d*)$', choice) and current_round.number == 1:
+
                         player_one_index = int(choice)
 
                         if player_one_index in player_menu.keys():
@@ -206,7 +207,7 @@ def input_results(tournament, tournament_circuit, season_number, season_one_play
                         else:
                             print('Invalid player choice')
 
-                    elif re.search('^(\d*),(\d*)$', choice) and (not season_two and current_round.number == 1) or (season_two and current_round.number > 1):
+                    elif (re.search('^(\d*),(\d*)$', choice)) and (not season_two and current_round.number == 1) or (season_two and current_round.number > 1):
                         match_players = choice.split(',')
                         try:
                             player_one_index = int(match_players[0])
@@ -425,6 +426,8 @@ def input_results(tournament, tournament_circuit, season_number, season_one_play
           
         # Increment current round
         tournament.current_input_round = round_number + 1
+        save_current_tournament_rankings(tournament)
+
 
     if season_two:
         for player in players:
@@ -436,10 +439,10 @@ def input_results(tournament, tournament_circuit, season_number, season_one_play
 
                     # if they have the same amount of wins as the last tournament, or if they have reached the final and lost
                     if season_one_round >= this_round or (season_one_round >= 4 and this_round >= 4):
-                        print('Player {} reached the same round as last time, they have the {} multiply factor'.format(player.name,tournament_difficulty))
+                        print('\n[Player {} reached the same round as last time, they have the {} multiply factor]\n'.format(player.name,tournament_difficulty))
                         player.tournament_points = float(float(player.tournament_points) * tournament_difficulty)
                     else:
-                        print('{} did not achieve the same round that they achieved in season 1.'.format(player.name))
+                        print('\n[{} did not achieve the same round that they achieved in season 1.]\n'.format(player.name))
                     break
     input('[ANY KEY TO VIEW FINAL RANKINGS]\n')
 
@@ -537,6 +540,7 @@ def user_input_score(gender, player_one=None, player_two=None,statistics=False):
         new_scores = Menu.get_user_choice()
         if re.search('^\d,\d$', new_scores):
             scores = new_scores.split(',')
+
             score_one = int(scores[0])
             score_two = int(scores[1])
 
@@ -641,6 +645,6 @@ def save_current_tournament_rankings(tournament):
 
 
 def load_current_tournament_rankings(tournament):
-
+    input(tournament.overall_rankings)
     for player in tournament.players:
         player.tournament_points, player.tournament_money = tournament.overall_rankings[player.name][0], tournament.overall_rankings[player.name][1]
