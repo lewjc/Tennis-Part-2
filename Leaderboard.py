@@ -2,6 +2,8 @@ import Menu
 
 import QuickSort
 
+import cProfile
+
 from TermColours import colours
 
 from TournamentClasses import Player
@@ -9,7 +11,7 @@ from TournamentClasses import Player
 import locale
 
 def display_overall_points_leaderboard(gender, tournament_circuit, season_number, season_one_circuit=None):
-
+    
     season_to_display = determine_what_season_to_display(season_number)
 
     # If we are viewing season 1
@@ -70,9 +72,11 @@ def display_overall_points_leaderboard(gender, tournament_circuit, season_number
             rank = "0" + rank
     
         print("Rank:[{0}]  Name: {1}  Points: {2:.2f}".format(rank, player.name, float(points)))
+    
     input("\n--ENTER--\n")
 
     return tournament_circuit
+
 
 
 def display_overall_money_leaderboard(gender, tournament_circuit, season_number, season_one_circuit=None):

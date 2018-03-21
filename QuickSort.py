@@ -1,4 +1,12 @@
-from random import randrange
+from random import randrange, sample
+import cProfile
+
+numbers = list()
+
+# 10 mil
+for i in range(0, 10000):
+    int = randrange(0,100000)
+    numbers.append(int)
 
 
 def partition(lst, start, end, pivot):
@@ -23,3 +31,13 @@ def quick_sort(lst, start, end):
 def sort(lst):
     quick_sort(lst, 0, len(lst) - 1)
     return lst
+
+pr = cProfile.Profile()
+pr.enable()
+    
+
+sort(numbers)
+# sorted(numbers)
+
+pr.disable()
+pr.print_stats()

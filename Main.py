@@ -6,7 +6,7 @@ import Menu
 import atexit
 import FileManager
 import StatisticManager
-
+import cProfile
 import TournamentManager
 import Leaderboard
 import os
@@ -36,7 +36,8 @@ def clear_terminal():
 current_season = list_of_seasons[0]
 
 while True:
-         
+
+
     choice = Menu.start_menu(tournament_circuit, (current_season.number if current_season != None else 0 ))
     
     user_choice = choice[0]
@@ -51,6 +52,7 @@ while True:
         # Determine which season to start
         # if season 2, we need to set up the tournament circuit differently,
         # due to the constraints on players.
+  
         if current_season.number == 2:
             current_season.tournament_circuit = Menu.circuit_population_menu(FileManager.get_main_data(True))
             tournament_circuit = current_season.tournament_circuit
@@ -60,6 +62,7 @@ while True:
             tournament_circuit = current_season.tournament_circuit
             FileManager.save_current_season(None, 2)
 
+        input()
         # Initialise the player statistic library
         for male_player, female_player in zip(tournament_circuit.male_circuit_players, tournament_circuit.female_circuit_players):
             male_player.initialise_statistics(tournament_circuit.list_of_tournaments)
@@ -83,9 +86,11 @@ while True:
             current_season.tournament_circuit = circuit
 
         tournament_circuit = current_season.tournament_circuit
+
     else:
        print('Invalid Choice')
 
+    input()
     clear_terminal()
 
     # start main menu

@@ -4,7 +4,6 @@ import Menu
 import QuickSort
 import sys
 import FileManager
-
 from TermColours import colours
 import re
 
@@ -404,14 +403,14 @@ def input_results(tournament, tournament_circuit, season_number, season_one_play
             # If we are on rounds 2 - 4, allocate points as normal, we dont add any points 
             # to players when they go into the final from the semi final
             if 0 < current_round.number < 4:
-                winning_player.tournament_points += (float(ranking_points[str(round_number)]) * multiplier * tournament.difficulty)
+                winning_player.tournament_points += (float(ranking_points[str(round_number)]) * multiplier * tournament.difficulty if season_two else 1 )
             
             # HERE WE ADD FINAL POINTS, DEPENDING ON WINNER OR LOSER. LOSER = 50 * TOURNAMENT DIFFICULTY,  
             # WINNER = 100  * DIFFICULTY * MULTIPLIER (IF APPLICABLE)
 
             elif current_round.number == 5:
-                winning_player.tournament_points += (float(ranking_points[str(round_number)]) * multiplier * tournament.difficulty)
-                losing_player.tournament_points += (float(ranking_points[str(round_number - 1)]) * tournament.difficulty)
+                winning_player.tournament_points += (float(ranking_points[str(round_number)]) * multiplier * tournament.difficulty if season_two else 1 )
+                losing_player.tournament_points += (float(ranking_points[str(round_number - 1)]) * tournament.difficulty  if season_two else 1 )
            
             # Add this match to the winnner or losers respective wins or losses ( Statistics )
             winning_player.wins_in_circuit[tournament.tournament_code].append(match)
@@ -444,6 +443,7 @@ def input_results(tournament, tournament_circuit, season_number, season_one_play
                     else:
                         print('\n[{} did not achieve the same round that they achieved in season 1.]\n'.format(player.name))
                     break
+
     input('[ANY KEY TO VIEW FINAL RANKINGS]\n')
 
     # print_current_points_ranking(players)
