@@ -2,7 +2,6 @@
 import TournamentManager
 import sys
 
-import cProfile
 import Menu
 
 from TermColours import colours
@@ -11,9 +10,7 @@ def display_statistics(players, statistic_choice, gender, list_of_tournaments):
 
     # Number of wins for a player with a particular score
     if statistic_choice == '1':    
-        pr = cProfile.Profile()
-        pr.enable()
-    
+   
         player = get_player_choice(players)
 
         score = TournamentManager.user_input_score(gender, statistics=True)
@@ -25,13 +22,14 @@ def display_statistics(players, statistic_choice, gender, list_of_tournaments):
 
         tournaments_to_view = get_tournament_choice(list_of_tournaments, gender)
         print()
-        # if we are getting stats for the whole tournament
+
         if len(tournaments_to_view) > 0:
             scores_to_show = dict()
             for tournament in tournaments_to_view:
                 scores_to_show[tournament.tournament_code] = list()
                 for match in player.wins_in_circuit[tournament.tournament_code]:
-                     if match.winner_score == winning_score and match.loser_score == losing_score:
+              
+                    if int(match.winner_score) == int(winning_score) and int(match.loser_score) == int(losing_score):
                      # the match is what we are looking for
                         scores_to_show[tournament.tournament_code].append(match)
 
@@ -47,11 +45,6 @@ def display_statistics(players, statistic_choice, gender, list_of_tournaments):
                     print(colours.WHITE + '{0} {1} results have not fully been entered, currently waiting on round '.format(tournament.tournament_code, tournament.gender) + colours.GREEN + '{}'.format(tournament.current_input_round + 1) + colours.WHITE + ' scores to be input ..\nMaybe this is why no statistics are showing up.\n')
         else:
             print('Error grabing tournament')
-        
-
-        pr.disable()
-        pr.print_stats()    
-
     # Percentage wins for a player
     elif statistic_choice == '2':
         player  = get_player_choice(players)

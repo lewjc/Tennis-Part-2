@@ -13,7 +13,6 @@ def input_results(tournament, tournament_circuit, season_number, season_one_play
 
     if season_number == 2:
         season_two = True
-        print(tournament.overall_rankings)
     else: 
         season_two = False
 
@@ -41,11 +40,12 @@ def input_results(tournament, tournament_circuit, season_number, season_one_play
 
     
     if tournament.current_input_round >= 1:
-        print('LOADING')
         load_current_tournament_rankings(tournament)
 
     # enumerate through the list of matches in the tournament
     for round_number, current_round in enumerate(tournament.list_of_rounds):
+        list_of_winners = list()
+
         # if user has not finished inputting results yet, loop until we are back to the current round
 
         if(round_number < tournament.current_input_round):
@@ -206,7 +206,7 @@ def input_results(tournament, tournament_circuit, season_number, season_one_play
                         else:
                             print('Invalid player choice')
 
-                    elif (re.search('^(\d*),(\d*)$', choice)) and (not season_two and current_round.number == 1) or (season_two and current_round.number > 1):
+                    elif (re.search('^(\d*),(\d*)$', choice)) and ((not season_two and current_round.number == 1) or (season_two and current_round.number > 1)):
                         match_players = choice.split(',')
                         try:
                             player_one_index = int(match_players[0])
@@ -382,8 +382,12 @@ def input_results(tournament, tournament_circuit, season_number, season_one_play
          
             print(colours.GREEN + colours.BLINK + 'Winner - {0}\n'.format(match.winner) + colours.ENDC + colours.WHITE)
 
+            if season_two:
+                list_of_winners.append(match.winner)
+            
             current_round.list_of_players.remove(match.winner)
             current_round.list_of_players.remove(match.loser)
+
 
             # Get the actual player object from the list of players
             temp = [player for player in tournament.players if player.name == match.winner]
@@ -395,7 +399,7 @@ def input_results(tournament, tournament_circuit, season_number, season_one_play
             # IF USING THIS BE SURE TO UPDATE THE FILE MANAGER FUNCTION IMPORT POINTS, 
             # AS TO IMPORT CORRECTLY
 
-            # 
+            # ## METHOD ONE ##
 
             #winning_player.tournament_points += (float(ranking_points[str(round_number)]) * float(Match.multiply_points(match.score_difference, tournament.gender) * tournament.difficulty))
 
@@ -409,18 +413,25 @@ def input_results(tournament, tournament_circuit, season_number, season_one_play
             # There are 3 methods for inputting points here, and all 3 have been told to me they are the right
             # way at some point along this coursework duration. Whichever one it is, you can comment and uncomment 
             # and use it 
+
+            ## METHOD TWO ##
             # if 1 < current_round.number < 5:
                 # winning_player.tournament_points += (float(ranking_points[str(round_number - 1)]) * multiplier * tournament.difficulty if season_two else 1 )
             
+            ## METHOD THREE ##
+
             if 0 < current_round.number < 4:
-                winning_player.tournament_points += (float(ranking_points[str(round_number)]) * multiplier * tournament.difficulty if season_two else 1 )
+                difficulty = tournament.difficulty if not season_two else 1
+                winning_player.tournament_points += ((float(ranking_points[str(round_number)]) * multiplier) * difficulty)
             
             # HERE WE ADD FINAL POINTS, DEPENDING ON WINNER OR LOSER. LOSER = 50 * TOURNAMENT DIFFICULTY,  
             # WINNER = 100  * DIFFICULTY * MULTIPLIER (IF APPLICABLE)
 
             elif current_round.number == 5:
-                winning_player.tournament_points += (float(ranking_points[str(round_number)]) * multiplier * tournament.difficulty if season_two else 1 )
-                losing_player.tournament_points += (float(ranking_points[str(round_number - 1)]) * tournament.difficulty  if season_two else 1 )
+                difficulty = tournament.difficulty if not season_two else 1
+
+                winning_player.tournament_points += (float(ranking_points[str(round_number)]) * multiplier * difficulty)
+                losing_player.tournament_points += (float(ranking_points[str(round_number - 1)]) * difficulty)
            
             # Add this match to the winnner or losers respective wins or losses ( Statistics )
             winning_player.wins_in_circuit[tournament.tournament_code].append(match)
@@ -435,6 +446,9 @@ def input_results(tournament, tournament_circuit, season_number, season_one_play
           
         # Increment current round
         tournament.current_input_round = round_number + 1
+        if season_two and round_number < 4:
+            tournament.list_of_rounds[tournament.current_input_round].list_of_players = list_of_winners
+
         save_current_tournament_rankings(tournament)
 
 
@@ -649,12 +663,10 @@ def save_current_tournament_rankings(tournament):
      # when the user quits, we need to save the current rankings
     if len(tournament.overall_rankings) > 0:
         {tournament.overall_rankings[player.name]: (player.tournament_points, player.tournament_money) for player in tournament.players}
-
     else:
         tournament.overall_rankings = { player.name : (player.tournament_points, player.tournament_money) for player in tournament.players}
 
 
 def load_current_tournament_rankings(tournament):
-    input(tournament.overall_rankings)
     for player in tournament.players:
         player.tournament_points, player.tournament_money = tournament.overall_rankings[player.name][0], tournament.overall_rankings[player.name][1]

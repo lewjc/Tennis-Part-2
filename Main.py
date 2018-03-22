@@ -61,8 +61,6 @@ while True:
             current_season.tournament_circuit = Menu.circuit_population_menu(FileManager.get_main_data())
             tournament_circuit = current_season.tournament_circuit
             FileManager.save_current_season(None, 2)
-
-        input()
         # Initialise the player statistic library
         for male_player, female_player in zip(tournament_circuit.male_circuit_players, tournament_circuit.female_circuit_players):
             male_player.initialise_statistics(tournament_circuit.list_of_tournaments)
@@ -90,7 +88,6 @@ while True:
     else:
        print('Invalid Choice')
 
-    input()
     clear_terminal()
 
     # start main menu
