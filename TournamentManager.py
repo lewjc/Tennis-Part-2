@@ -459,9 +459,8 @@ def input_results(tournament, tournament_circuit, season_number, season_one_play
                     season_one_round = len(season_one_player.wins_in_circuit[tournament.tournament_code])
 
                     this_round = len(player.wins_in_circuit[tournament.tournament_code])
-
                     # if they have the same amount of wins as the last tournament, or if they have reached the final and lost
-                    if season_one_round >= this_round or (season_one_round >= 4 and this_round >= 4):
+                    if this_round >= season_one_round or (season_one_round >= 4 and this_round >= 4):
                         print('\n[Player {} reached the same round as last time, they have the {} multiply factor]\n'.format(player.name,tournament_difficulty))
                         player.tournament_points = float(float(player.tournament_points) * tournament_difficulty)
                     else:
